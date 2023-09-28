@@ -89,4 +89,5 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
             time.sleep(1)
             tag = self.get_nearest_tag(color)
             continue
+        print (f"Found {tag_name}")
         return tag
