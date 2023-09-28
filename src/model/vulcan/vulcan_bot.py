@@ -35,10 +35,9 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         print("Found bank")
 
         self.mouse.move_to(bank.random_point())
-        if not self.mouseover_text(contains="Use Bank"):
+        if not self.click_on_action("Bank"):
             return
         print("Using bank")
-        self.mouse.click()
 
         # finish walking
         self.wait_for_idle()
@@ -91,3 +90,11 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
             continue
         print (f"Found {tag_name}")
         return tag
+    
+    def click_on_action(self, action: str) -> bool:
+        if not self.mouseover_text(contains=action):
+            self.move_camera(10)
+            return False
+    
+        self.mouse.click()
+        return True

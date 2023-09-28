@@ -59,15 +59,15 @@ class VulcanWoodcutter(VulcanBot):
                     self.bank_all()
                 else:
                     print("unknown action")
+                continue
 
             # search for a tree
             tree = self.search_for_tag("trees", clr.PINK)
 
             # Click tree and wait to start cutting
             self.mouse.move_to(tree.random_point())
-            if not self.mouseover_text(contains="Chop"):
+            if not self.click_on_action("Chop"):
                 continue
-            self.mouse.click()
 
             if first_loop:
                 # Chop for a few seconds to get the Woodcutting plugin to show up
