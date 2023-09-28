@@ -31,7 +31,6 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
             self.walk_to_midpoint()
             time.sleep(1)
             return
-
         print("Found bank")
 
         self.mouse.move_to(bank.random_point())
@@ -44,6 +43,8 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
 
         # find deposit all button
         deposit_all_btn = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png"), self.win.game_view)
+        if deposit_all_btn is None:
+            return
         self.mouse.move_to(deposit_all_btn.random_point())
         print("Depositing inventory")
         self.mouse.click()

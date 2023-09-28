@@ -66,7 +66,7 @@ class VulcanMiner(VulcanBot):
             # Click ore and wait to start mining
             self.mouse.move_to(ore.random_point())
             if not self.click_on_action("Mine"):
-                return
+                continue
 
             if first_loop:
                 # Chop for a few seconds to get the Mining plugin to show up
