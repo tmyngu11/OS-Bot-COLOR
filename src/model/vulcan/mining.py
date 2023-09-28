@@ -49,39 +49,21 @@ class VulcanMiner(VulcanBot):
         self.mouse.click()
 
         first_loop = True
-        logs = 0
-        failed_searches = 0
-
-        # Last inventory slot color when empty
-        x, y = self.win.inventory_slots[-1].get_center()
-        self.empty_slot_clr = pag.pixel(x, y)
-        print(self.empty_slot_clr)
 
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
             # If inventory is full
-            if self.__inv_is_full():
+            if self.is_inventory_full():
                 print("Inventory is full")
-                self.__use_bank()
+                self.bank_all()
                 continue
 
             # Find an ore
-            ore = self.get_nearest_tag(clr.PINK)
-            if ore is None:
-                failed_searches += 1
-                if failed_searches % 10 == 0:
-                    self.log_msg("Searching for ores...")
-                    self.__walk_to_midpoint()
-                if failed_searches > 60:
-                    # If we've been searching for a whole minute...
-                    self.__logout("No tagged ores found. Logging out.")
-                time.sleep(1)
-                continue
-            failed_searches = 0  # If code got here, an ore was found
+            ore = self.search_for_tag("ores", clr.PINK)
 
-            # Click tree and wait to start mining
+            # Click ore and wait to start mining
             self.mouse.move_to(ore.random_point())
             if not self.mouseover_text(contains="Mine"):
                 continue
@@ -102,52 +84,3 @@ class VulcanMiner(VulcanBot):
 
         self.update_progress(1)
         self.stop()
-
-    def __inv_is_full(self):
-        """
-        Private method to check if inventory is full based on the color of the last inventory slot.
-        """
-        empty_slot_color = clr.Color([75, 66, 58])
-        x, y = self.win.inventory_slots[-1].get_center()
-        return pag.pixel(x, y) != self.empty_slot_clr
-
-    def __use_bank(self):
-        """
-        Private method to deposit inventory is full based on the color of the last inventory slot.
-        """
-        print("Looking for bank")
-        bank = self.get_nearest_tag(clr.CYAN)
-        if bank is None:
-            print("Bank not found")
-            self.__walk_to_midpoint()
-            time.sleep(1)
-            return
-
-        self.mouse.move_to(bank.random_point())
-        if not self.mouseover_text(contains="Use"):
-            return
-        self.mouse.click()
-
-        time.sleep(5)
-
-        deposit = self.get_nearest_tag(clr.GREEN)
-
-        self.mouse.move_to(deposit.random_point())
-        time.sleep(2)
-        self.mouse.click()
-
-        close_button = self.get_nearest_tag(clr.PURPLE)
-        self.mouse.move_to(close_button.random_point())
-        time.sleep(2)
-        self.mouse.click()
-
-
-    def __walk_to_midpoint(self):
-        print("Walking to midpoint")
-        midpoint = self.get_nearest_tag(clr.YELLOW)
-        self.mouse.move_to(midpoint.random_point())
-        self.mouse.click()
-
-
-    def __is_bank_open(self):
-        return False
