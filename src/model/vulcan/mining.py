@@ -76,9 +76,8 @@ class VulcanMiner(VulcanBot):
 
             time.sleep(rd.truncated_normal_sample(1, 10, 2, 2))
 
-            # Wait until we're done chopping
-            while self.is_player_doing_action("Mining"):
-                time.sleep(1)
+            # Wait until we're done mining
+            self.wait_for_idle()
 
             self.update_progress((time.time() - start_time) / end_time)
 
