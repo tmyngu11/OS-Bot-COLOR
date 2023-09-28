@@ -77,12 +77,12 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         tag = self.get_nearest_tag(color)
         while tag is None:
             failed_searches += 1
-            self.move_camera(failed_searches * 10)
+            self.move_camera(10)
 
             if failed_searches % 10 == 0:
                 self.log_msg(f"Searching for {tag_name}...")
 
-            if failed_searches > 60:
+            if failed_searches > 30:
                 # If we've been searching for a whole minute...
                 self.log_msg(f"No {tag_name} found.")
                 return None
