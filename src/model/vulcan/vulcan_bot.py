@@ -97,6 +97,7 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         return tag
     
     def click_on_action(self, action: str) -> bool:
+        time.sleep(1)
         if not self.mouseover_text(contains=action):
             self.move_camera(10)
             return False
@@ -116,3 +117,5 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         dismiss_text = ocr.find_text("Dismiss", self.win.game_view, ocr.BOLD_12, [clr.WHITE, clr.PURPLE, clr.ORANGE])
         self.mouse.move_to(dismiss_text[0].random_point(), mouseSpeed="medium")
         self.mouse.click()
+
+        
