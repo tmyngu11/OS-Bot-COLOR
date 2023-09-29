@@ -62,6 +62,9 @@ class VulcanMiner(VulcanBot):
 
             # Find an ore
             ore = self.search_for_tag("ores", clr.PINK)
+            if not ore:
+                time.sleep(5)
+                continue
 
             # Click ore and wait to start mining
             self.mouse.move_to(ore.random_point())

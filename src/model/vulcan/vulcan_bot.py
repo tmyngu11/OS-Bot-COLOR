@@ -4,6 +4,7 @@ import utilities.color as clr
 from model.runelite_bot import RuneLiteBot, RuneLiteWindow
 from utilities.api.morg_http_client import MorgHTTPSocket
 import utilities.imagesearch as imsearch
+import utilities.ocr as ocr
 
 class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
     win: RuneLiteWindow = None
@@ -99,3 +100,16 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
     
         self.mouse.click()
         return True
+    
+    def check_message_in_chat(self, search: str):
+        latest_msg = self.api_m.get_latest_chat_message()
+        print(latest_msg)
+        return search in latest_msg
+
+    def dismiss_npc(self):
+        npc = self.search_for_tag("npc", clr.RED)
+        self.mouse.move_to(npc.random_point())
+        self.mouse.right_click()
+        dismiss_text = ocr.find_text("Dismiss", self.win.game_view, ocr.BOLD_12, [clr.WHITE, clr.PURPLE, clr.ORANGE])
+        self.mouse.move_to(dismiss_text[0].random_point(), mouseSpeed="medium")
+        self.mouse.click()
