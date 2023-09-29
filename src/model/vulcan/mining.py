@@ -56,7 +56,7 @@ class VulcanMiner(VulcanBot):
         while time.time() - start_time < end_time:
             # If inventory is full
             if self.is_inventory_full():
-                print("Inventory is full")
+                self.log_msg("Inventory is full")
                 self.bank_all()
                 continue
 

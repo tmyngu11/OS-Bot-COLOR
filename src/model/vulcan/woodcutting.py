@@ -52,13 +52,13 @@ class VulcanWoodcutter(VulcanBot):
         while time.time() - start_time < end_time:
             # If inventory is full
             if self.is_inventory_full():
-                print("Inventory is full")
+                self.log_msg("Inventory is full")
                 if self.action == "Burn":
                     self.__burn_wood()
                 elif self.action == "Bank":
                     self.bank_all()
                 else:
-                    print("unknown action")
+                    self.log_msg("unknown action")
                 continue
 
             # search for a tree
@@ -121,5 +121,5 @@ class VulcanWoodcutter(VulcanBot):
             # wait for wood to burn
             self.wait_for_idle()
 
-        print("Finished firemaking")
+        self.log_msg("Finished firemaking")
 

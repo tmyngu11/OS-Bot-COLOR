@@ -18,7 +18,7 @@ class VulcanThiever(VulcanBot):
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
-        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Drop", "Bank"])
+        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Drop"])
 
     def save_options(self, options: dict):
         for option in options:
@@ -52,17 +52,17 @@ class VulcanThiever(VulcanBot):
             # check for guard
             guard = self.get_nearest_tag(clr.RED)
             if guard:
-                print("Guard is active")
+                self.log_msg("Guard is active")
                 # dismiss
                 self.dismiss_npc()
 
             # If inventory is full
             if self.is_inventory_full():
-                print("Inventory is full")
+                self.log_msg("Inventory is full")
                 if self.action == "Bank":
                     self.bank_all()
                 else:
-                    print("unknown action")
+                    self.log_msg("unknown action")
                 continue
 
             # search for a stall
@@ -88,42 +88,4 @@ class VulcanThiever(VulcanBot):
         self.update_progress(1)
         self.__logout("Finished.")
 
-    
-    def __burn_wood(self):
-        print("Moving to burn location")
-
-        # Find and move to burn spot
-        burn_spot = self.get_nearest_tag(clr.GREEN)
-        self.mouse.move_to(burn_spot.random_point())
-        self.mouse.click()
-        
-        self.wait_for_idle()
-
-        # start burning
-        for i, slot in enumerate(self.win.inventory_slots):
-            # skip tinderbox
-            if i == 0:
-                continue
-
-            # use tinderbox
-            self.mouse.move_to(self.win.inventory_slots[0].random_point())
-            self.mouse.click()
-
-            # wait for idle
-            self.wait_for_idle()
-
-            # use on wood
-            self.mouse.move_to(slot.random_point())
-            self.mouse.click()
-
-            # time.sleep(1)
-            # print(self.chatbox_text())
-            # if self.chatbox_text("light a fire here"):
-            #     print("Cant light a fire")
-            #     break
-
-            # wait for wood to burn
-            self.wait_for_idle()
-
-        print("Finished firemaking")
 
