@@ -26,7 +26,7 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         Private method to deposit inventory into bank
         """
 
-        self.toggle_run(True)
+        # self.toggle_run(True)
 
         print("Looking for bank")
         bank = self.search_for_tag("bank", clr.CYAN)
@@ -118,4 +118,3 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         self.mouse.move_to(dismiss_text[0].random_point(), mouseSpeed="medium")
         self.mouse.click()
 
-        
