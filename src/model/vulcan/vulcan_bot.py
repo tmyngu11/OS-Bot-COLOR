@@ -25,6 +25,9 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         """
         Private method to deposit inventory into bank
         """
+
+        self.toggle_run(True)
+
         print("Looking for bank")
         bank = self.search_for_tag("bank", clr.CYAN)
         if bank is None:
