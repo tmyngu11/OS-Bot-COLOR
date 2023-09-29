@@ -96,8 +96,17 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         print (f"Found {tag_name}")
         return tag
     
-    def click_on_action(self, action: str) -> bool:
+    def click_on_action(self, action: str = None) -> bool:
         time.sleep(1)
+
+        if not action:
+            self.mouse.click()
+            return True
+
+        if self.mouseover_text(contains="Walk here"):
+            self.mouse.click()
+            return False
+
         if not self.mouseover_text(contains=action):
             self.move_camera(10)
             return False
