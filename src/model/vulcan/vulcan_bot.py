@@ -129,3 +129,8 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         self.mouse.move_to(dismiss_text[0].random_point(), mouseSpeed="medium")
         self.mouse.click()
 
+
+    def drop_items(self, item_id):
+        slots = self.api_m.get_inv_item_indices(item_id)
+        self.drop(slots)
+        time.sleep(1)

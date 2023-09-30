@@ -6,6 +6,7 @@ import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
 from utilities.api.morg_http_client import MorgHTTPSocket
 from utilities.api.status_socket import StatusSocket
+import utilities.api.item_ids as ids
 
 
 class VulcanMiner(VulcanBot):
@@ -57,7 +58,8 @@ class VulcanMiner(VulcanBot):
             # If inventory is full
             if self.is_inventory_full():
                 self.log_msg("Inventory is full")
-                self.bank_all()
+                # self.bank_all()
+                self.drop_items(ids.ores)
                 continue
 
             # Find an ore
