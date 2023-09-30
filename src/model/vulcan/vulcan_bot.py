@@ -61,6 +61,8 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
     def walk_to_midpoint(self):
         self.log_msg("Walking to midpoint")
         midpoint = self.search_for_tag("midpoint", clr.YELLOW)
+        if not midpoint:
+            return
         self.mouse.move_to(midpoint.random_point())
         self.mouse.click()
         
