@@ -18,8 +18,8 @@ class VulcanWoodcutter(VulcanBot):
         self.action = "Bank"
 
     def create_options(self):
-        self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
-        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Drop", "Burn", "Bank"])
+        self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 1000)
+        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Burn", "Drop"])
 
     def save_options(self, options: dict):
         for option in options:

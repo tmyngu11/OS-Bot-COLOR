@@ -95,7 +95,7 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
             time.sleep(1)
             tag = self.get_nearest_tag(color)
             continue
-        print (f"Found {tag_name}")
+        self.log_msg(f"Found {tag_name}")
         return tag
     
     def click_on_action(self, action: str = None) -> bool:
