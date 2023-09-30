@@ -2,6 +2,7 @@ import time
 import utilities.color as clr
 import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
+import utilities.api.item_ids as ids
 
 
 class VulcanWoodcutter(VulcanBot):
@@ -57,6 +58,8 @@ class VulcanWoodcutter(VulcanBot):
                     self.__burn_wood()
                 elif self.action == "Bank":
                     self.bank_all()
+                elif self.action == "Drop":
+                    self.drop_all(ids.logs)
                 else:
                     self.log_msg("unknown action")
                 continue

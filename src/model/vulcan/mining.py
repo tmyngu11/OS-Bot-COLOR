@@ -6,13 +6,12 @@ import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
 from utilities.api.morg_http_client import MorgHTTPSocket
 from utilities.api.status_socket import StatusSocket
-import utilities.api.item_ids as ids
 
 
 class VulcanMiner(VulcanBot):
     def __init__(self):
         bot_title = "Miner"
-        description = "<Script description here>"
+        description = "Auto mines ore"
         super().__init__(bot_title=bot_title, description=description)
         # Set option variables below (initial value is only used during headless testing)
         self.running_time = 600
@@ -25,6 +24,7 @@ class VulcanMiner(VulcanBot):
         unpack the dictionary of options after the user has selected them.
         """
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
+        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Drop"])
 
     def save_options(self, options: dict):
         """
@@ -35,6 +35,8 @@ class VulcanMiner(VulcanBot):
         for option in options:
             if option == "running_time":
                 self.running_time = options[option]
+            elif option == "action":
+                self.action = options[option]
             else:
                 self.log_msg(f"Unknown option: {option}")
                 print("Developer: ensure that the option keys are correct, and that options are being unpacked correctly.")
@@ -58,8 +60,12 @@ class VulcanMiner(VulcanBot):
             # If inventory is full
             if self.is_inventory_full():
                 self.log_msg("Inventory is full")
-                # self.bank_all()
-                self.drop_items(ids.ores)
+                if self.action == "Bank":
+                    self.bank_all()
+                elif self.action == "Drop":
+                    self.drop_all(ids.logs)
+                else:
+                    self.log_msg("unknown action")
                 continue
 
             # Find an ore
