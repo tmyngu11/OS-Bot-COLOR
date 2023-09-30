@@ -63,6 +63,8 @@ class VulcanWoodcutter(VulcanBot):
 
             # search for a tree
             tree = self.search_for_tag("trees", clr.PINK)
+            if not tree:
+                continue
 
             # Click tree and wait to start cutting
             self.mouse.move_to(tree.random_point())
