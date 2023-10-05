@@ -7,4 +7,4 @@ pyautogui.FAILSAFE = False
 
 if __name__ == "__main__":
     app = App(test=True)
-    app.test(VulcanThiever())
+    app.test(VulcanMiner())

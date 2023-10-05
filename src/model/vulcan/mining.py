@@ -1,11 +1,9 @@
 import time
-import pyscreeze as pag
 import utilities.api.item_ids as ids
 import utilities.color as clr
 import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
-from utilities.api.morg_http_client import MorgHTTPSocket
-from utilities.api.status_socket import StatusSocket
+from utilities.walker import Area, Path
 
 
 class VulcanMiner(VulcanBot):
@@ -17,12 +15,6 @@ class VulcanMiner(VulcanBot):
         self.running_time = 600
 
     def create_options(self):
-        """
-        Use the OptionsBuilder to define the options for the bot. For each function call below,
-        we define the type of option we want to create, its key, a label for the option that the user will
-        see, and the possible values the user can select. The key is used in the save_options function to
-        unpack the dictionary of options after the user has selected them.
-        """
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
         self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Drop"])
 
@@ -58,9 +50,10 @@ class VulcanMiner(VulcanBot):
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
             # If inventory is full
-            if self.is_inventory_full():
+            if self.get_is_inv_full():
                 self.log_msg("Inventory is full")
                 if self.action == "Bank":
+                    self.walk(Path.DWARVEN_MINES_ORE_TO_BANK.value, Area.DWARVEN_MINES_BANK.value)
                     self.bank_all()
                 elif self.action == "Drop":
                     self.drop_all(ids.logs)

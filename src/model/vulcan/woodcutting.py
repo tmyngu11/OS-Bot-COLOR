@@ -3,6 +3,7 @@ import utilities.color as clr
 import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
 import utilities.api.item_ids as ids
+import pyautogui as pag
 
 
 class VulcanWoodcutter(VulcanBot):
@@ -20,7 +21,7 @@ class VulcanWoodcutter(VulcanBot):
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 1000)
-        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Burn", "Drop"])
+        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Burn", "Fletch", "Drop"])
 
     def save_options(self, options: dict):
         for option in options:
@@ -52,12 +53,14 @@ class VulcanWoodcutter(VulcanBot):
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
             # If inventory is full
-            if self.is_inventory_full():
+            if self.get_is_inv_full():
                 self.log_msg("Inventory is full")
                 if self.action == "Burn":
                     self.__burn_wood()
                 elif self.action == "Bank":
                     self.bank_all()
+                elif self.action == "Fletch":
+                    self.__fletch_wood()
                 elif self.action == "Drop":
                     self.drop_all(ids.logs)
                 else:
@@ -88,6 +91,29 @@ class VulcanWoodcutter(VulcanBot):
 
         self.update_progress(1)
         self.__logout("Finished.")
+
+    def __fletch_wood(self):
+        print("Start fletching")
+        self.wait_for_idle()
+
+        knife = self.get_first_occurrence(ids.KNIFE)
+        log = self.get_first_occurrence(ids.LOGS)
+
+        # use knife
+        self.mouse.move_to(self.win.inventory_slots[knife].random_point())
+        self.mouse.click()
+
+        # on log
+        self.mouse.move_to(self.win.inventory_slots[log].random_point())
+        self.mouse.click()
+
+        time.sleep(1)
+
+        pag.keyDown("space")
+        
+        self.wait_for_idle()
+
+        self.log_msg("Finished Fletching")
 
     
     def __burn_wood(self):

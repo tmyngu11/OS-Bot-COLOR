@@ -57,7 +57,7 @@ class VulcanThiever(VulcanBot):
                 self.dismiss_npc()
 
             # If inventory is full
-            if self.is_inventory_full():
+            if self.get_is_inv_full():
                 self.log_msg("Inventory is full")
                 if self.action == "Bank":
                     self.bank_all()

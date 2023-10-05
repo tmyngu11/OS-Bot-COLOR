@@ -1,25 +1,14 @@
 from abc import ABCMeta
 import time
+from model.walker_bot import WalkerBot
 import utilities.color as clr
-from model.runelite_bot import RuneLiteBot, RuneLiteWindow
-from utilities.api.morg_http_client import MorgHTTPSocket
+from model.runelite_bot import RuneLiteWindow
 import utilities.imagesearch as imsearch
 import utilities.ocr as ocr
 
-class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
-    win: RuneLiteWindow = None
-
+class VulcanBot(WalkerBot, metaclass=ABCMeta):
     def __init__(self, bot_title, description) -> None:
         super().__init__("Vulcan", bot_title, description, RuneLiteWindow("Vulcan Reborn"))
-        # API Setup
-        self.api_m = MorgHTTPSocket()
-
-    def wait_for_idle(self):
-        while not self.api_m.get_is_player_idle():
-            time.sleep(1)
-    
-    def is_inventory_full(self):
-         return self.api_m.get_is_inv_full()
     
     def bank_all(self):
         """
@@ -134,3 +123,4 @@ class VulcanBot(RuneLiteBot, metaclass=ABCMeta):
         slots = self.api_m.get_inv_item_indices(item_id)
         self.drop(slots)
         time.sleep(1)
+
