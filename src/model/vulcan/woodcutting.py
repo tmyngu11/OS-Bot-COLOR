@@ -109,7 +109,7 @@ class VulcanWoodcutter(VulcanBot):
 
         time.sleep(1)
 
-        pag.keyDown("space")
+        pag.press("space")
         
         self.wait_for_idle()
 
