@@ -98,7 +98,8 @@ class VulcanWoodcutter(VulcanBot):
 
         knife = self.get_first_occurrence(ids.KNIFE)
         logs = self.get_first_occurrence([ids.LOGS, ids.OAK_LOGS, ids.WILLOW_LOGS, ids.MAPLE_LOGS, ids.YEW_LOGS, ids.MAGIC_LOGS, ids.REDWOOD_LOGS])
-        logs = filter(lambda x: x != -1, logs)
+        logs = [l for l in logs if l != -1]
+        self.log_msg(str(logs))
         log = logs[0]
 
         # use knife
