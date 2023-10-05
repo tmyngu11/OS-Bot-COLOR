@@ -93,13 +93,15 @@ class VulcanWoodcutter(VulcanBot):
         self.__logout("Finished.")
 
     def __fletch_wood(self):
-        print("Start fletching")
+        self.log_msg("Start fletching")
         self.wait_for_idle()
 
         knife = self.get_first_occurrence(ids.KNIFE)
         logs = self.get_first_occurrence([ids.LOGS, ids.OAK_LOGS, ids.WILLOW_LOGS, ids.MAPLE_LOGS, ids.YEW_LOGS, ids.MAGIC_LOGS, ids.REDWOOD_LOGS])
         logs = [l for l in logs if l != -1]
-        self.log_msg(str(logs))
+        if len(logs) == 0:
+            self.log_msg("No logs in inventory")
+            return
         log = logs[0]
 
         # use knife
@@ -120,7 +122,7 @@ class VulcanWoodcutter(VulcanBot):
 
     
     def __burn_wood(self):
-        print("Moving to burn location")
+        self.log_msg("Moving to burn location")
 
         # Find and move to burn spot
         burn_spot = self.get_nearest_tag(clr.GREEN)
