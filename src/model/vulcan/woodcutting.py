@@ -97,7 +97,9 @@ class VulcanWoodcutter(VulcanBot):
         self.wait_for_idle()
 
         knife = self.get_first_occurrence(ids.KNIFE)
-        log = self.get_first_occurrence(ids.LOGS)
+        logs = self.get_first_occurrence([ids.LOGS, ids.OAK_LOGS, ids.WILLOW_LOGS, ids.MAPLE_LOGS, ids.YEW_LOGS, ids.MAGIC_LOGS, ids.REDWOOD_LOGS])
+        logs = filter(lambda x: x != -1, logs)
+        log = logs[0]
 
         # use knife
         self.mouse.move_to(self.win.inventory_slots[knife].random_point())
