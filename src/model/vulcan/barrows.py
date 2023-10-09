@@ -34,10 +34,8 @@ class VulcanBarrows(VulcanBot):
                 return
         self.options_set = True
 
-    def main_loop(self):
-        current_run = 0
-
-        brothers = {
+    def reset_state(self):
+        self.brothers = {
             "Dharok": False,
             "Ahrim": False,
             "Verak": False,
@@ -46,6 +44,106 @@ class VulcanBarrows(VulcanBot):
             "Guthan": False,
         }
 
+        self.hidden_brother = None
+
+    def main_loop(self):
+        current_run = 0
+
+        self.reset_state()
+
+        while current_run < self.runs:
+            self.__eat_food()
+
+            # loop through brothers and kill them. skip hidden
+            for brother, status in self.brothers.items():
+                if status:
+                    continue
+
+                self.__handle_brother(brother)
+                time.sleep(2)
+
+                hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
+                hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat, confidence=0)
+
+                if hidden_tunnel:
+                    self.log_msg(f"Found hidden tunnel {hidden_tunnel}")
+                    self.hidden_brother = brother
+                else:
+                    self.log_msg(f"Fighting {brother}")
+                    time.sleep(2)
+                    if not "appears to be empty" in self.get_latest_chat_message():
+                        self.__handle_combat()
+
+                self.brothers[brother] = True
+
+                # now leave
+                self.__turn_off_prayer()
+                stairs = self.search_for_tag("stairs", clr.YELLOW)
+                self.mouse.move_to(stairs.center())
+                self.mouse.click()
+
+            #### do hidden brother ####
+
+            self.__handle_brother(self.hidden_brother)
+
+            # search
+            hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
+            hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat)
+            if not hidden_tunnel:
+                continue
+
+            self.mouse.move_to(hidden_tunnel.get_center())
+            self.mouse.click()
+
+            time.sleep(2)
+
+            # fearless option
+            fearless_option_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_fearless.png")
+            fearless_option = imsearch.search_img_in_rect(image=fearless_option_path, rect=self.win.chat)
+            self.mouse.move_to(fearless_option.get_center())
+            self.mouse.click()
+
+            time.sleep(2)
+
+            # open last chest
+            chest = self.search_for_tag("chest", clr.PINK)
+            self.mouse.move_to(chest.center())
+            self.mouse.click()
+
+            time.sleep(2)
+
+            self.__handle_combat()
+
+            self.wait_for_idle()
+            time.sleep(5)
+
+            # open last chest
+            chest = self.search_for_tag("chest", clr.PINK)
+            self.mouse.move_to(chest.center())
+            self.mouse.click()
+            self.wait_for_idle()
+            self.mouse.click()
+
+            time.sleep(2)
+
+            close_loot_path = imsearch.BOT_IMAGES.joinpath("barrows", "close.png")
+            close_loot_option = imsearch.search_img_in_rect(image=close_loot_path, rect=self.win.game_view)
+            self.mouse.move_to(close_loot_option.get_center())
+            self.mouse.click()
+
+            time.sleep(2)
+            chest = self.search_for_tag("chest", clr.PINK)
+            self.mouse.move_to(chest.center())
+            self.mouse.click()
+
+            self.reset_state()
+
+            current_run += 1
+            self.__restock()
+
+        self.logout()
+
+    def __handle_brother(self, brother):
         locations = {
             "Dharok": [3574, 3295, 3577, 3300],
             "Ahrim": [3563, 3292, 3566, 3286],
@@ -55,128 +153,20 @@ class VulcanBarrows(VulcanBot):
             "Guthan": [3575, 3281, 3580, 3285],
         }
 
-        hidden_brother = None
+        # walk to brother
+        brother_area = locations[brother]
+        self.log_msg(f"Moving to {brother}")
+        self.walk_to_area(brother_area)
+        if not self.is_at_destination(brother_area):
+            return
 
-        while current_run < self.runs:
-            self.__eat_food()
+        self.__swap_equip(brother)
+        self.__eat_food()
+        self.__handle_prayer(brother)
 
-            # loop through brothers and kill them. skip hidden
-            for brother, status in brothers.items():
-                if status:
-                    continue
+        self.__use_spade()
 
-                # walk to brother
-                brother_area = locations[brother]
-                self.log_msg(f"Moving to {brother}")
-                self.walk_to_area(brother_area)
-                if self.is_at_destination(brother_area):
-                    self.__swap_equip(brother)
-                    self.__eat_food()
-                    self.__handle_prayer(brother)
-
-                    self.__use_spade()
-
-                    self.__search_sarcophagus()
-                    time.sleep(2)
-
-                    hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
-                    hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat, confidence=0)
-
-                    if hidden_tunnel:
-                        self.log_msg(f"Found hidden tunnel {hidden_tunnel}")
-                        hidden_brother = brother
-                    else:
-                        self.log_msg(f"Fighting {brother}")
-                        time.sleep(2)
-                        self.__handle_combat()
-
-                    brothers[brother] = True
-
-                    # now leave
-                    self.__turn_off_prayer()
-                    stairs = self.search_for_tag("stairs", clr.YELLOW)
-                    self.mouse.move_to(stairs.center())
-                    self.mouse.click()
-
-            #### do hidden brother ####
-
-            # walk to brother
-            brother_area = locations[hidden_brother]
-            self.log_msg(f"Moving to {hidden_brother}")
-            self.walk_to_area(brother_area)
-            if self.is_at_destination(brother_area):
-                self.__swap_equip(brother)
-                self.__eat_food()
-                self.__handle_prayer(brother)
-
-                self.__use_spade()
-
-                self.__search_sarcophagus()
-
-            # search
-            hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
-            hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat)
-            if hidden_tunnel:
-                print(hidden_tunnel)
-                self.mouse.move_to(hidden_tunnel.get_center())
-                self.mouse.click()
-
-                time.sleep(2)
-
-                # fearless option
-                fearless_option_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_fearless.png")
-                fearless_option = imsearch.search_img_in_rect(image=fearless_option_path, rect=self.win.chat)
-                self.mouse.move_to(fearless_option.get_center())
-                self.mouse.click()
-
-                time.sleep(2)
-
-                # open last chest
-                chest = self.search_for_tag("chest", clr.PINK)
-                self.mouse.move_to(chest.center())
-                self.mouse.click()
-
-                time.sleep(2)
-
-                self.__handle_combat()
-
-                self.wait_for_idle()
-                time.sleep(5)
-
-                # open last chest
-                chest = self.search_for_tag("chest", clr.PINK)
-                self.mouse.move_to(chest.center())
-                self.mouse.click()
-                self.wait_for_idle()
-                self.mouse.click()
-
-                time.sleep(2)
-
-                close_loot_path = imsearch.BOT_IMAGES.joinpath("barrows", "close.png")
-                close_loot_option = imsearch.search_img_in_rect(image=close_loot_path, rect=self.win.game_view)
-                self.mouse.move_to(close_loot_option.get_center())
-                self.mouse.click()
-
-                time.sleep(2)
-                chest = self.search_for_tag("chest", clr.PINK)
-                self.mouse.move_to(chest.center())
-                self.mouse.click()
-
-            brothers = {
-                "Dharok": False,
-                "Ahrim": False,
-                "Verak": False,
-                "Torag": False,
-                "Karil": False,
-                "Guthan": False,
-            }
-
-            hidden_brother = None
-
-            current_run += 1
-            self.__restock()
-
-        self.logout()
+        self.__search_sarcophagus()
 
     def __handle_prayer(self, brother):
         current_prayer = self.get_prayer()
@@ -227,6 +217,9 @@ class VulcanBarrows(VulcanBot):
         while not self.get_is_player_idle() or self.get_is_in_combat():
             # Heal if low
             self.__eat_food()
+
+            if "Magic level of 50" in self.get_latest_chat_message():
+                self.__restock()
         self.log_msg("Finished fighting")
 
     def __swap_equip(self, brother):
