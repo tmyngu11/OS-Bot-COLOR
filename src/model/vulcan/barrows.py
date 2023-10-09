@@ -228,7 +228,7 @@ class VulcanBarrows(VulcanBot):
                     self.log_msg("Using Restore Potion")
                     self.mouse.move_to(self.win.inventory_slots[restore_potion[0]].random_point())
                     self.mouse.click()
-                    return
+                    continue
                 self.__restock()
                 self.__handle_brother(brother)
                 return
