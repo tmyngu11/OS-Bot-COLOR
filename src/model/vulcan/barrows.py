@@ -217,7 +217,8 @@ class VulcanBarrows(VulcanBot):
         self.__handle_prayer(brother)
 
         # wait for fight to be over
-        while not self.get_is_player_idle() or self.get_is_in_combat():
+        is_player_eating = self.get_animation() in [829]
+        while not self.get_is_player_idle() or self.get_is_in_combat() or is_player_eating:
 
 
             # Heal if low
