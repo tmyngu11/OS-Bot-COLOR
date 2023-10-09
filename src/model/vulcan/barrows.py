@@ -144,6 +144,7 @@ class VulcanBarrows(VulcanBot):
         if hidden_tunnel and not self.hidden_brother: # first run through to find hidden brother
             self.log_msg(f"Found hidden tunnel at {brother}")
             self.hidden_brother = brother
+            self.disable_prayers()
         elif hidden_tunnel and self.hidden_brother: # doing the final brother
             self.mouse.move_to(hidden_tunnel.get_center())
             self.mouse.click()
@@ -158,7 +159,6 @@ class VulcanBarrows(VulcanBot):
 
             time.sleep(2)
         else: # fight the brother
-            self.log_msg(f"Fighting {brother}")
             time.sleep(2)
             if self.chatbox_text("appears to be empty"):
                 self.log_msg("{brother} already defeated")
@@ -169,6 +169,16 @@ class VulcanBarrows(VulcanBot):
     def __handle_prayer(self, brother):
         current_prayer = self.get_prayer()
 
+        # Use prayer potion if available
+        prayer_potion = self.get_first_occurrence([item_ids.PRAYER_POTION1,item_ids.PRAYER_POTION2,item_ids.PRAYER_POTION3,item_ids.PRAYER_POTION4])
+        if prayer_potion != -1 and current_prayer <= 20:
+            self.log_msg("Using Prayer Potion")
+            self.mouse.move_to(self.win.inventory_slots[prayer_potion].random_point())
+            self.mouse.click()
+            time.sleep(1)
+            current_prayer = self.get_prayer()
+
+        # no prayer
         if current_prayer <= 0:
             return
 
@@ -194,20 +204,25 @@ class VulcanBarrows(VulcanBot):
 
 
     def __handle_combat(self, brother):
-        time.sleep(5)
-        if self.get_is_player_idle() and not self.get_is_in_combat():
+        self.log_msg(f"Fighting {brother}")
+        # while not fighting, search for brother to fight
+        while self.get_is_player_idle() and not self.get_is_in_combat():
             enemy = self.search_for_tag("barrows brother", clr.RED, 10)
             if enemy:
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
+        
         # wait for fight to be over
         while not self.get_is_player_idle() or self.get_is_in_combat():
             # Heal if low
             self.__eat_food()
 
+            # handle magic debuff
             if "Magic level of 50" in self.get_latest_chat_message():
                 self.__restock()
                 self.__handle_brother(brother)
+                return
+            
         self.log_msg("Finished fighting")
         self.disable_prayers()
 
