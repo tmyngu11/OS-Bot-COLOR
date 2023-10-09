@@ -253,7 +253,7 @@ class VulcanBarrows(VulcanBot):
         time.sleep(3)
 
     def __eat_food(self):
-        while self.get_hp() < 60:
+        while self.get_hitpoints() < 60:
             food_indexes = self.get_inv_item_indices(item_ids.all_food + item_ids.combo_food)
             if food_indexes:
                 self.log_msg("Eating...")
