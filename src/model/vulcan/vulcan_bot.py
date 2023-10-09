@@ -203,3 +203,8 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.mouse.move_to(self.win.prayer_orb.get_center())
         self.mouse.click()
         self.mouse.click()
+
+    def select_inventory(self):
+        self.log_msg("Selecting inventory...")
+        self.mouse.move_to(self.win.cp_tabs[3].random_point())
+        self.mouse.click()

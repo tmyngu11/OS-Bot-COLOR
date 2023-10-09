@@ -160,7 +160,7 @@ class VulcanBarrows(VulcanBot):
         else: # fight the brother
             self.log_msg(f"Fighting {brother}")
             time.sleep(2)
-            if not "appears to be empty" in self.get_latest_chat_message():
+            if self.chatbox_text("appears to be empty"):
                 self.__handle_combat(brother)
 
 
@@ -211,6 +211,8 @@ class VulcanBarrows(VulcanBot):
 
 
     def __swap_equip(self, brother):
+        self.select_inventory()
+
         required_weapon = item_ids.IBANS_STAFF_U
         required_chest = item_ids.AHRIMS_ROBETOP
         if brother == "Ahrim":
@@ -249,10 +251,6 @@ class VulcanBarrows(VulcanBot):
                 self.logout()
 
     def __use_spade(self):
-        # self.log_msg("Selecting inventory...")
-        # self.mouse.move_to(self.win.cp_tabs[3].random_point())
-        # self.mouse.click()
-
         self.log_msg("Using Spade")
         spade = self.get_first_occurrence(ids.SPADE)
         self.mouse.move_to(self.win.inventory_slots[spade].random_point())
@@ -264,6 +262,8 @@ class VulcanBarrows(VulcanBot):
         self.teleport_home()
 
         self.toggle_run(True)
+
+        self.select_inventory()
 
         home_bank_area = [3093, 3497, 3094, 3493]
         self.use_bank(home_bank_area)
