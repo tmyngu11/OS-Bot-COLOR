@@ -161,7 +161,9 @@ class VulcanBarrows(VulcanBot):
             self.log_msg(f"Fighting {brother}")
             time.sleep(2)
             if self.chatbox_text("appears to be empty"):
-                self.__handle_combat(brother)
+                self.log_msg("{brother} already defeated")
+                return
+            self.__handle_combat(brother)
 
 
     def __handle_prayer(self, brother):
