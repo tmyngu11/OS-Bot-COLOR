@@ -142,6 +142,23 @@ class MorgHTTPSocket:
             print(f"Invalid stat name: {skill}. Consider using the `stat_names` utility.")
             return -1
         return level
+    
+    def get_skill_boosted_level(self, skill: str) -> int:
+        # sourcery skip: class-extract-method
+        """
+        Gets boosted level of inputted skill.
+        Args:
+                skill: the name of the skill (not case sensitive)
+        Returns:
+                The level of the skill as an int, or -1 if an error occurred.
+        """
+        data = self.__do_get(endpoint=self.stats_endpoint)
+        try:
+            level = next(int(i["boostedLevel"]) for i in data[1:] if i["stat"] == skill)
+        except StopIteration:
+            print(f"Invalid stat name: {skill}. Consider using the `stat_names` utility.")
+            return -1
+        return level
 
     def get_skill_xp(self, skill: str) -> int:
         """

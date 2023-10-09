@@ -207,9 +207,9 @@ class VulcanBarrows(VulcanBot):
         # while not fighting, search for brother to fight
         while self.get_is_player_idle() and not self.get_is_in_combat():
             if self.chatbox_action_text("appears to be empty"):
-                self.log_msg("{brother} already defeated")
+                self.log_msg(f"{brother} already defeated")
                 break
-            
+
             enemy = self.search_for_tag("barrows brother", clr.RED, 10)
             if enemy:
                 self.mouse.move_to(enemy.random_point())
@@ -223,6 +223,12 @@ class VulcanBarrows(VulcanBot):
 
             # handle magic debuff
             if self.chatbox_action_text("Magic level of 50"):
+                restore_potion = self.get_first_occurrence([item_ids.SUPER_RESTORE1,item_ids.SUPER_RESTORE2,item_ids.SUPER_RESTORE3,item_ids.SUPER_RESTORE4])
+                if restore_potion != []:
+                    self.log_msg("Using Restore Potion")
+                    self.mouse.move_to(self.win.inventory_slots[restore_potion[0]].random_point())
+                    self.mouse.click()
+                    return
                 self.__restock()
                 self.__handle_brother(brother)
                 return
