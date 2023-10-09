@@ -223,7 +223,7 @@ class VulcanBarrows(VulcanBot):
             # handle magic debuff
             if self.chatbox_action_text("Magic level of 50"):
                 restore_potion = self.get_first_occurrence([item_ids.SUPER_RESTORE1,item_ids.SUPER_RESTORE2,item_ids.SUPER_RESTORE3,item_ids.SUPER_RESTORE4])
-                if restore_potion != []:
+                if restore_potion != [] and self.get_skill_boosted_level("Magic") < 50:
                     self.log_msg("Using Restore Potion")
                     self.mouse.move_to(self.win.inventory_slots[restore_potion[0]].random_point())
                     self.mouse.click()
