@@ -1,5 +1,7 @@
 from abc import ABCMeta
 import time
+
+import pyautogui
 from model.walker_bot import WalkerBot
 import utilities.color as clr
 from model.runelite_bot import RuneLiteWindow
@@ -15,7 +17,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         Private method to deposit inventory into bank
         """
 
-        # self.toggle_run(True)
+        self.toggle_run(True)
 
         self.log_msg("Looking for bank")
         bank = self.search_for_tag("bank", clr.CYAN)
@@ -40,10 +42,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.log_msg("Depositing inventory")
         self.mouse.click()
 
-        close_button = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("bank", "close.png"), self.win.game_view)
-        self.mouse.move_to(close_button.random_point())
-        self.log_msg("Close bank gui")
-        self.mouse.click()
+        self.close_bank()
 
 
     def walk_to_midpoint(self):
@@ -131,3 +130,44 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
 
         self.mouse.move_to(self.win.spellbook_normal[0].get_center())
         self.mouse.click()
+
+    def close_bank(self):
+        close_button = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("bank", "close.png"), self.win.game_view)
+        self.mouse.move_to(close_button.random_point())
+        self.log_msg("Close bank gui")
+        self.mouse.click()
+
+    def rejuvenate(self):
+        area = [3094, 3513, 3096, 3510]
+        self.walk_to_area(area)
+
+        pool = self.search_for_tag("pool", clr.YELLOW)
+        if not pool:
+            return
+        self.mouse.move_to(pool.random_point())
+        self.mouse.click()
+        
+        self.wait_for_idle()
+
+    def use_teleporter(self, location: str):
+        area = [3085, 3500, 3087, 3503]
+        self.walk_to_area(area)
+
+        teleporter = self.search_for_tag("teleporter", clr.GREEN)
+        if not teleporter:
+            return
+        self.mouse.move_to(teleporter.random_point())
+        self.mouse.click()
+
+        self.wait_for_idle()
+
+        pyautogui.write(location)
+        pyautogui.press("enter")
+        time.sleep(2)
+
+        teleport = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("vulcan", "teleports.png"), self.win.game_view)
+        tx, ty = teleport.random_point()
+        self.mouse.move_to([tx, ty  + 25])
+        self.mouse.click()
+
+        self.wait_for_idle()
