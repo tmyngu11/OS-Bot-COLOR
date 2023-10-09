@@ -176,6 +176,8 @@ class VulcanBarrows(VulcanBot):
             current_run += 1
             self.__restock()
 
+        self.logout()
+
     def __handle_prayer(self, brother):
         current_prayer = self.get_prayer()
 
@@ -297,7 +299,7 @@ class VulcanBarrows(VulcanBot):
         # finish walking
         self.wait_for_idle()
 
-        food_path = imsearch.BOT_IMAGES.joinpath("scraper", "Cooked_karambwan_bank.png")
+        food_path = imsearch.BOT_IMAGES.joinpath("items", "Cooked_karambwan_bank.png")
         food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
         self.mouse.move_to(food.get_center())
         self.mouse.click()
