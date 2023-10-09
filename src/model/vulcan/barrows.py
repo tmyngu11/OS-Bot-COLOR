@@ -235,7 +235,7 @@ class VulcanBarrows(VulcanBot):
         required_weapon = item_ids.IBANS_STAFF_U
         required_chest = item_ids.AHRIMS_ROBETOP
         if brother == "Ahrim":
-            required_weapon = item_ids.RUNE_KNIFE
+            required_weapon = item_ids.ADAMANT_KNIFE
             required_chest = item_ids.GUTHIX_DHIDE_BODY
 
         if not self.get_is_item_equipped(required_weapon):
