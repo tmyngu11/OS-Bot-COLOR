@@ -122,6 +122,8 @@ class VulcanBarrows(VulcanBot):
             "Guthan": [3575, 3281, 3580, 3285],
         }
 
+        self.toggle_run(True)
+
         # walk to brother
         brother_area = locations[brother]
         self.log_msg(f"Moving to {brother}")
@@ -208,7 +210,7 @@ class VulcanBarrows(VulcanBot):
                 self.log_msg(f"{brother} already defeated")
                 break
 
-            enemy = self.search_for_tag("barrows brother", clr.RED, 10)
+            enemy = self.search_for_tag("barrows brother", clr.RED)
             if enemy:
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
