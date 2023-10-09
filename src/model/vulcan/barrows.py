@@ -108,6 +108,7 @@ class VulcanBarrows(VulcanBot):
             self.reset_state()
 
             current_run += 1
+            self.log_msg(f"Runs Completed: {current_run}")
             self.__restock()
 
         self.logout()
