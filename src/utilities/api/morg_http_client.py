@@ -122,7 +122,7 @@ class MorgHTTPSocket:
         start_time = time.time()
         while time.time() - start_time < poll_seconds:
             data = self.__do_get(endpoint=self.events_endpoint)
-            if data.get("animation") != -1 or data.get("animation pose") not in [808, 813]:
+            if data.get("animation") != -1 or data.get("animation pose") not in [808, 813, 4591]:
                 return False
         return True
 

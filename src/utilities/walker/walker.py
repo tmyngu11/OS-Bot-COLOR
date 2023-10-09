@@ -173,6 +173,6 @@ def generate_path(p1, p2):
 
     return target_path
 
-p1 = node_settings.locDigsiteSouth
-p2 = node_settings.locFalador
+p1 = node_settings.locArdougneEBank
+p2 = node_settings.locBarbarianVillage
 generate_path(p1, p2)

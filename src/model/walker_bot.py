@@ -2,12 +2,14 @@ from abc import ABCMeta
 import math
 import time
 from typing import List
-
+import random
 import pyautogui
 from utilities.walker import Area, Path
 from utilities.window import Window
 from model.runelite_bot import RuneLiteBot, RuneLiteWindow
 from utilities.api.morg_http_client import MorgHTTPSocket
+import utilities.imagesearch as imsearch
+
 
 class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
 
@@ -15,11 +17,9 @@ class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
         super().__init__(game_title, bot_title, description, window)
         MorgHTTPSocket.__init__(self)
 
-
     def wait_for_idle(self):
         while not self.get_is_player_idle():
             time.sleep(1)
-    
 
     def walk(self, path: Path, destination: Area) -> None:
         """
@@ -44,13 +44,87 @@ class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
                 self.wait_for_idle()
 
 
+    def walk_to_area(self, destination: Area):
+        self.log_msg("Started walking")
+
+        self.toggle_run(True)
+        
+        while True:
+            # if not at destination and no door on screen, walk. Otherwise stop.
+            if self.is_at_destination(destination):
+                self.log_msg("We made it!")
+                break
+
+            # Get next position to walk to
+            new_pos = self.get_next_pos(destination)
+            self.log_msg(f"Moving to new position {new_pos}")
+
+            # Change position.
+            self.change_position(new_pos)
+
+            # wait for walking to be done
+            self.wait_for_idle()
+
+    def get_random_point_in_area(self, area: Area):
+        x1, y1, x2, y2 = area
+
+        # Swap x1 and x2 if x1 is greater than x2
+        if x1 > x2:
+            x1, x2 = x2, x1
+
+        # Swap y1 and y2 if y1 is greater than y2
+        if y1 > y2:
+            y1, y2 = y2, y1
+
+        # Generate random x and y coordinates within the specified ranges
+        random_x = random.randint(x1, x2)
+        random_y = random.randint(y1, y2)
+
+        return [random_x, random_y]
+
+    def get_next_pos(self, destination: Area):
+        current_pos = self.get_player_position()
+        x1, y1, x2, y2 = destination
+
+        # Calculate the center of the destination rectangle
+        dest_center_x = (x1 + x2) // 2
+        dest_center_y = (y1 + y2) // 2
+
+        # Calculate the difference between current position and destination center
+        dx = dest_center_x - current_pos[0]
+        dy = dest_center_y - current_pos[1]
+
+        tile_limit = 10
+
+        # Limit the maximum movement to 13 units in both x and y directions
+        if abs(dx) > tile_limit:
+            dx = tile_limit if dx > 0 else -tile_limit
+        if abs(dy) > tile_limit:
+            dy = tile_limit if dy > 0 else -tile_limit
+
+        # Calculate the new position
+        new_x = current_pos[0] + dx
+        new_y = current_pos[1] + dy
+
+        return [new_x, new_y]
+
     def is_at_destination(self, area: Area) -> bool:
-        current_position = self.get_player_position()
-        bool_x = current_position[0] in range(area[0], area[2] + 1)
-        bool_y = current_position[1] in range(area[1], area[3] + 1)
+        current_pos = self.get_player_position()
+        x1, y1, x2, y2 = area
 
-        return bool_x and bool_y
+        # Ensure x1 is the minimum and x2 is the maximum
+        if x1 > x2:
+            x1, x2 = x2, x1
 
+        # Ensure y1 is the minimum and y2 is the maximum
+        if y1 > y2:
+            y1, y2 = y2, y1
+
+        # Check if the current position is within the specified area
+        if x1 <= current_pos[0] <= x2 and y1 <= current_pos[1] <= y2:
+            return True
+        else:
+            return False
 
     def change_position(self, new_pos: List[int]) -> None:
         """
@@ -64,7 +138,6 @@ class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
             pyautogui.click()
             self.wait_for_idle()
 
-
     def get_target_pos(self, path: Path) -> List[int]:
         """
         Returns furthest possible coord.
@@ -74,7 +147,6 @@ class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
         idx = next(i for i in range(len(path) - 1, -1, -1) if (abs(path[i][0] - current_position[0]) <= 13 and abs(path[i][1] - current_position[1]) <= 13))
         new_pos = path[idx]
         return new_pos
-
 
     def compute_tiles(self, new_x: int, new_y: int) -> List[float]:
         """

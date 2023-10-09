@@ -21,7 +21,6 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         bank = self.search_for_tag("bank", clr.CYAN)
         if bank is None:
             self.log_msg("Bank not found")
-            self.walk_to_midpoint()
             return
         self.log_msg("Found bank")
 
@@ -63,7 +62,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.logout()
         self.stop()
 
-    def search_for_tag(self, tag_name: str, color: clr.Color):
+    def search_for_tag(self, tag_name: str, color: clr.Color, timeout = 30):
         failed_searches = 0
 
         # reset zoom
@@ -79,7 +78,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
             if failed_searches % 10 == 0:
                 self.log_msg(f"Searching for {tag_name}...")
 
-            if failed_searches > 30:
+            if failed_searches > timeout:
                 # If we've been searching for a whole minute...
                 self.log_msg(f"No {tag_name} found.")
                 return None
@@ -124,3 +123,11 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.drop(slots)
         time.sleep(1)
 
+    def teleport_home(self):
+        # open spells        
+        self.log_msg("Open Spells Tab")
+        self.mouse.move_to(self.win.cp_tabs[6].get_center())
+        self.mouse.click()
+
+        self.mouse.move_to(self.win.spellbook_normal[0].get_center())
+        self.mouse.click()
