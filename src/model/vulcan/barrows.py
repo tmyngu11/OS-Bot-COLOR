@@ -206,14 +206,15 @@ class VulcanBarrows(VulcanBot):
         self.log_msg(f"Fighting {brother}")
         # while not fighting, search for brother to fight
         while self.get_is_player_idle() and not self.get_is_in_combat():
+            if self.chatbox_action_text("appears to be empty"):
+                self.log_msg("{brother} already defeated")
+                break
+            
             enemy = self.search_for_tag("barrows brother", clr.RED, 10)
             if enemy:
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
 
-            if self.chatbox_action_text("appears to be empty"):
-                self.log_msg("{brother} already defeated")
-                break
         
         # wait for fight to be over
         while not self.get_is_player_idle() or self.get_is_in_combat():
