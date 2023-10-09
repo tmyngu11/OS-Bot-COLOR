@@ -77,9 +77,9 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(chest.center())
             self.mouse.click()
 
-            time.sleep(2)
+            time.sleep(3)
 
-            self.__handle_combat(brother)
+            self.__handle_combat(self.hidden_brother)
 
             self.wait_for_idle()
             time.sleep(5)
