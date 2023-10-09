@@ -134,8 +134,6 @@ class VulcanBarrows(VulcanBot):
 
         self.__use_spade()
 
-        self.__handle_prayer(brother)
-
         self.__search_sarcophagus()
 
         self.__handle_hidden_tunnel(brother)
@@ -162,6 +160,7 @@ class VulcanBarrows(VulcanBot):
 
             time.sleep(2)
         else: # fight the brother
+            self.__handle_prayer(brother)
             self.__handle_combat(brother)
 
 

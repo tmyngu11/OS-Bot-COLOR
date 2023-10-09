@@ -103,7 +103,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         if ocr.find_text(contains, self.win.chat, ocr.PLAIN_12, clr.BLACK):
             return True
     
-    def click_on_action(self, action: str = None) -> bool:
+    def click_on_action(self, action: str = None, area = None) -> bool:
         time.sleep(1)
 
         if not action:
@@ -112,7 +112,8 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
 
         if self.mouseover_text(contains="Walk"):
             self.log_msg("Too far away")
-            self.walk_to_midpoint()
+            if area:
+                self.walk_to_area(area)
             return False
 
         if not self.mouseover_text(contains=action):
