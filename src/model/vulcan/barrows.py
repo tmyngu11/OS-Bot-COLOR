@@ -171,9 +171,9 @@ class VulcanBarrows(VulcanBot):
 
         # Use prayer potion if available
         prayer_potion = self.get_first_occurrence([item_ids.PRAYER_POTION1,item_ids.PRAYER_POTION2,item_ids.PRAYER_POTION3,item_ids.PRAYER_POTION4])
-        if prayer_potion != -1 and current_prayer <= 20:
+        if prayer_potion != [] and current_prayer <= 20:
             self.log_msg("Using Prayer Potion")
-            self.mouse.move_to(self.win.inventory_slots[prayer_potion].random_point())
+            self.mouse.move_to(self.win.inventory_slots[prayer_potion[0]].random_point())
             self.mouse.click()
             time.sleep(1)
             current_prayer = self.get_prayer()
