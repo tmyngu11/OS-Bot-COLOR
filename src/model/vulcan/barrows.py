@@ -250,13 +250,15 @@ class VulcanBarrows(VulcanBot):
 
         if not self.get_is_item_equipped(required_weapon):
             item = self.get_first_occurrence(required_weapon)
-            self.mouse.move_to(self.win.inventory_slots[item].random_point())
-            self.mouse.click()
+            if item:
+                self.mouse.move_to(self.win.inventory_slots[item].random_point())
+                self.mouse.click()
 
         if not self.get_is_item_equipped(required_chest):
             item = self.get_first_occurrence(required_chest)
-            self.mouse.move_to(self.win.inventory_slots[item].random_point())
-            self.mouse.click()
+            if item:
+                self.mouse.move_to(self.win.inventory_slots[item].random_point())
+                self.mouse.click()
 
     def __search_sarcophagus(self):
         sarcophagus = self.search_for_tag("sarcophagus", clr.PINK)
