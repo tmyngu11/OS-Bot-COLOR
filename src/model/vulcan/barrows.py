@@ -131,9 +131,10 @@ class VulcanBarrows(VulcanBot):
 
         self.__swap_equip(brother)
         self.__eat_food()
-        self.__handle_prayer(brother)
 
         self.__use_spade()
+
+        self.__handle_prayer(brother)
 
         self.__search_sarcophagus()
 
@@ -162,7 +163,7 @@ class VulcanBarrows(VulcanBot):
             time.sleep(2)
         else: # fight the brother
             time.sleep(2)
-            if self.chatbox_text("appears to be empty"):
+            if self.chatbox_action_text("appears to be empty"):
                 self.log_msg("{brother} already defeated")
                 return
             self.__handle_combat(brother)
@@ -220,7 +221,7 @@ class VulcanBarrows(VulcanBot):
             self.__eat_food()
 
             # handle magic debuff
-            if "Magic level of 50" in self.get_latest_chat_message():
+            if self.chatbox_action_text("Magic level of 50"):
                 self.__restock()
                 self.__handle_brother(brother)
                 return

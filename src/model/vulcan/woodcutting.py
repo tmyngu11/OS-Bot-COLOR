@@ -148,11 +148,9 @@ class VulcanWoodcutter(VulcanBot):
             self.mouse.move_to(slot.random_point())
             self.mouse.click()
 
-            # time.sleep(1)
-            # print(self.chatbox_text())
-            # if self.chatbox_text("light a fire here"):
-            #     print("Cant light a fire")
-            #     break
+            if self.chatbox_action_text("light a fire here"):
+                print("Cant light a fire")
+                break
 
             # wait for wood to burn
             self.wait_for_idle()
