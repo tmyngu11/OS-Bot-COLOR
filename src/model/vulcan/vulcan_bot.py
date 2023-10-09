@@ -215,8 +215,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         if current_prayer <= 0:
             return
 
-        # open prayer
-        self.log_msg("Open Prayer Tab")
+        self.log_msg("Disable Prayers")
         self.mouse.move_to(self.win.prayer_orb.get_center())
         self.mouse.click()
         self.mouse.click()

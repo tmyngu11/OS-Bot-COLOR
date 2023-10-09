@@ -253,13 +253,13 @@ class VulcanBarrows(VulcanBot):
 
         if not self.get_is_item_equipped(required_weapon):
             item = self.get_first_occurrence(required_weapon)
-            if item:
+            if item != -1:
                 self.mouse.move_to(self.win.inventory_slots[item].random_point())
                 self.mouse.click()
 
         if not self.get_is_item_equipped(required_chest):
             item = self.get_first_occurrence(required_chest)
-            if item:
+            if item != -1:
                 self.mouse.move_to(self.win.inventory_slots[item].random_point())
                 self.mouse.click()
 
