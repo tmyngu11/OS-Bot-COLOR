@@ -301,8 +301,9 @@ class VulcanBarrows(VulcanBot):
 
         food_path = imsearch.BOT_IMAGES.joinpath("items", "Cooked_karambwan_bank.png")
         food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
-        self.mouse.move_to(food.get_center())
-        self.mouse.click()
+        if food:
+            self.mouse.move_to(food.get_center())
+            self.mouse.click()
 
         self.close_bank()
 
