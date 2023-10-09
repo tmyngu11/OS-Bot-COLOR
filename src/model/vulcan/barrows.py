@@ -160,7 +160,6 @@ class VulcanBarrows(VulcanBot):
 
             time.sleep(2)
         else: # fight the brother
-            self.__handle_prayer(brother)
             self.__handle_combat(brother)
 
 
@@ -215,8 +214,12 @@ class VulcanBarrows(VulcanBot):
                 self.mouse.click()
 
         
+        self.__handle_prayer(brother)
+
         # wait for fight to be over
         while not self.get_is_player_idle() or self.get_is_in_combat():
+
+
             # Heal if low
             self.__eat_food()
 
