@@ -103,6 +103,8 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(chest.center())
             self.mouse.click()
 
+            time.sleep(2)
+
             self.reset_state()
 
             current_run += 1
