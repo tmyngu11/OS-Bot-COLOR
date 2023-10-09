@@ -60,24 +60,10 @@ class VulcanBarrows(VulcanBot):
                     continue
 
                 self.__handle_brother(brother)
-                time.sleep(2)
-
-                hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
-                hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat, confidence=0)
-
-                if hidden_tunnel:
-                    self.log_msg(f"Found hidden tunnel {hidden_tunnel}")
-                    self.hidden_brother = brother
-                else:
-                    self.log_msg(f"Fighting {brother}")
-                    time.sleep(2)
-                    if not "appears to be empty" in self.get_latest_chat_message():
-                        self.__handle_combat()
 
                 self.brothers[brother] = True
 
                 # now leave
-                self.__turn_off_prayer()
                 stairs = self.search_for_tag("stairs", clr.YELLOW)
                 self.mouse.move_to(stairs.center())
                 self.mouse.click()
@@ -86,25 +72,6 @@ class VulcanBarrows(VulcanBot):
 
             self.__handle_brother(self.hidden_brother)
 
-            # search
-            hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
-            hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat)
-            if not hidden_tunnel:
-                continue
-
-            self.mouse.move_to(hidden_tunnel.get_center())
-            self.mouse.click()
-
-            time.sleep(2)
-
-            # fearless option
-            fearless_option_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_fearless.png")
-            fearless_option = imsearch.search_img_in_rect(image=fearless_option_path, rect=self.win.chat)
-            self.mouse.move_to(fearless_option.get_center())
-            self.mouse.click()
-
-            time.sleep(2)
-
             # open last chest
             chest = self.search_for_tag("chest", clr.PINK)
             self.mouse.move_to(chest.center())
@@ -112,7 +79,7 @@ class VulcanBarrows(VulcanBot):
 
             time.sleep(2)
 
-            self.__handle_combat()
+            self.__handle_combat(brother)
 
             self.wait_for_idle()
             time.sleep(5)
@@ -168,6 +135,35 @@ class VulcanBarrows(VulcanBot):
 
         self.__search_sarcophagus()
 
+        self.__handle_hidden_tunnel(brother)
+
+    def __handle_hidden_tunnel(self, brother):
+        hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
+        hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat, confidence=0)
+
+        if hidden_tunnel and not self.hidden_brother: # first run through to find hidden brother
+            self.log_msg(f"Found hidden tunnel at {brother}")
+            self.hidden_brother = brother
+        elif hidden_tunnel and self.hidden_brother: # doing the final brother
+            self.mouse.move_to(hidden_tunnel.get_center())
+            self.mouse.click()
+
+            time.sleep(2)
+
+            # fearless option
+            fearless_option_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_fearless.png")
+            fearless_option = imsearch.search_img_in_rect(image=fearless_option_path, rect=self.win.chat)
+            self.mouse.move_to(fearless_option.get_center())
+            self.mouse.click()
+
+            time.sleep(2)
+        else: # fight the brother
+            self.log_msg(f"Fighting {brother}")
+            time.sleep(2)
+            if not "appears to be empty" in self.get_latest_chat_message():
+                self.__handle_combat(brother)
+
+
     def __handle_prayer(self, brother):
         current_prayer = self.get_prayer()
 
@@ -194,19 +190,8 @@ class VulcanBarrows(VulcanBot):
         self.mouse.move_to(self.win.cp_tabs[3].get_center())
         self.mouse.click()
 
-    def __turn_off_prayer(self):
-        current_prayer = self.get_prayer()
 
-        if current_prayer <= 0:
-            return
-
-        # open prayer
-        self.log_msg("Open Prayer Tab")
-        self.mouse.move_to(self.win.prayer_orb.get_center())
-        self.mouse.click()
-        self.mouse.click()
-
-    def __handle_combat(self):
+    def __handle_combat(self, brother):
         time.sleep(5)
         if self.get_is_player_idle() and not self.get_is_in_combat():
             enemy = self.search_for_tag("barrows brother", clr.RED, 10)
@@ -220,7 +205,10 @@ class VulcanBarrows(VulcanBot):
 
             if "Magic level of 50" in self.get_latest_chat_message():
                 self.__restock()
+                self.__handle_brother(brother)
         self.log_msg("Finished fighting")
+        self.disable_prayers()
+
 
     def __swap_equip(self, brother):
         required_weapon = item_ids.IBANS_STAFF_U
@@ -277,22 +265,13 @@ class VulcanBarrows(VulcanBot):
 
         self.toggle_run(True)
 
-        self.log_msg("Looking for bank")
-        bank = self.search_for_tag("bank", clr.CYAN)
-        if bank is None:
-            self.log_msg("Bank not found")
-            return
-        self.log_msg("Found bank")
-
-        self.mouse.move_to(bank.random_point())
-        if not self.click_on_action("Bank"):
-            return
-        self.log_msg("Using bank")
+        home_bank_area = [3093, 3497, 3094, 3493]
+        self.use_bank(home_bank_area)
 
         # finish walking
         self.wait_for_idle()
 
-        food_path = imsearch.BOT_IMAGES.joinpath("items", "Cooked_karambwan_bank.png")
+        food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
         food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
         if food:
             self.mouse.move_to(food.get_center())

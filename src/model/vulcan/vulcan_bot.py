@@ -149,6 +149,25 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         
         self.wait_for_idle()
 
+    def use_bank(self, area = None):
+        self.log_msg("Looking for bank")
+        bank = self.search_for_tag("bank", clr.CYAN)
+        if bank is None:
+            self.log_msg("Bank not found")
+            if area:
+                self.walk_to_area(area)
+                self.use_bank(area)
+            return
+        self.log_msg("Found bank")
+
+        self.mouse.move_to(bank.random_point())
+        if not self.click_on_action("Bank"):
+            if area:
+                self.walk_to_area(area)
+                self.use_bank(area)
+            return
+        self.log_msg("Using bank")
+
     def use_teleporter(self, location: str):
         area = [3085, 3500, 3087, 3503]
         self.walk_to_area(area)
@@ -171,3 +190,16 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.mouse.click()
 
         self.wait_for_idle()
+
+
+    def disable_prayers(self):
+        current_prayer = self.get_prayer()
+
+        if current_prayer <= 0:
+            return
+
+        # open prayer
+        self.log_msg("Open Prayer Tab")
+        self.mouse.move_to(self.win.prayer_orb.get_center())
+        self.mouse.click()
+        self.mouse.click()
