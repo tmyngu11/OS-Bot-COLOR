@@ -19,7 +19,7 @@ class VulcanBarrows(VulcanBot):
         self.runs = 5
 
     def create_options(self):
-        self.options_builder.add_slider_option("runs", "How many times to run?", 1, 500)
+        self.options_builder.add_slider_option("runs", "How many times to run?", 1, 50)
 
     def save_options(self, options: dict):
         for option in options:
