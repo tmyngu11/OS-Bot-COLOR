@@ -162,10 +162,6 @@ class VulcanBarrows(VulcanBot):
 
             time.sleep(2)
         else: # fight the brother
-            time.sleep(2)
-            if self.chatbox_action_text("appears to be empty"):
-                self.log_msg("{brother} already defeated")
-                return
             self.__handle_combat(brother)
 
 
@@ -214,6 +210,10 @@ class VulcanBarrows(VulcanBot):
             if enemy:
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
+
+            if self.chatbox_action_text("appears to be empty"):
+                self.log_msg("{brother} already defeated")
+                break
         
         # wait for fight to be over
         while not self.get_is_player_idle() or self.get_is_in_combat():
