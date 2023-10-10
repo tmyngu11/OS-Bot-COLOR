@@ -69,7 +69,7 @@ class VulcanBarrows(VulcanBot):
                 self.mouse.click()
 
             #### do hidden brother ####
-
+            self.log_msg(f"Doing hidden brother: {self.hidden_brother}")
             self.__handle_brother(self.hidden_brother)
 
             # open last chest
