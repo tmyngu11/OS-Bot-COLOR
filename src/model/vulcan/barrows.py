@@ -67,6 +67,7 @@ class VulcanBarrows(VulcanBot):
                 stairs = self.search_for_tag("stairs", clr.YELLOW)
                 self.mouse.move_to(stairs.center())
                 self.mouse.click()
+                self.wait_for_idle()
 
             #### do hidden brother ####
             self.log_msg(f"Doing hidden brother: {self.hidden_brother}")
