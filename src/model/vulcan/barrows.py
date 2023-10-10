@@ -246,6 +246,8 @@ class VulcanBarrows(VulcanBot):
                 self.__restock()
                 self.__handle_brother(brother)
                 return
+            
+            time.sleep(1)
 
         self.log_msg("Finished fighting")
         self.disable_prayers()
