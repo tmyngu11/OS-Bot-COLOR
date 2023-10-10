@@ -177,7 +177,7 @@ class VulcanBarrows(VulcanBot):
             self.log_msg("Using Prayer Potion")
             self.mouse.move_to(self.win.inventory_slots[prayer_potion[0]].random_point())
             self.mouse.click()
-            time.sleep(1)
+            time.sleep(2)
 
     def __handle_prayer(self, brother):
         current_prayer = self.get_prayer()
@@ -224,10 +224,7 @@ class VulcanBarrows(VulcanBot):
                 return
 
         # wait for fight to be over
-        is_player_eating = self.get_animation() in [829]
-        while not self.get_is_player_idle() or self.get_is_in_combat() or is_player_eating:
-            is_player_eating = self.get_animation() in [829]
-
+        while not self.get_is_player_idle() or self.get_is_in_combat() or self.get_animation() in [829]:
             # Heal if low
             self.__eat_food()
 
@@ -310,7 +307,7 @@ class VulcanBarrows(VulcanBot):
         self.select_inventory()
 
         # only use bank if need more food or refresh prayer pots
-        if self.get_is_inv_full() and self.get_if_item_in_inv(item_ids.VIAL):
+        if not self.get_is_inv_full() or self.get_if_item_in_inv(item_ids.VIAL):
             home_bank_area = [3093, 3497, 3094, 3493]
             self.use_bank(home_bank_area)
 
@@ -319,7 +316,7 @@ class VulcanBarrows(VulcanBot):
 
             food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
             food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
-            if food:
+            if food and not self.get_is_inv_full():
                 self.mouse.move_to(food.get_center())
                 self.mouse.click()
 
