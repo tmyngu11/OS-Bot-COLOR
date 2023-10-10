@@ -135,6 +135,7 @@ class VulcanBarrows(VulcanBot):
 
         self.__swap_equip(brother)
         self.__eat_food()
+        self.drink_prayer_pots()
 
         self.__use_spade()
 
@@ -190,8 +191,6 @@ class VulcanBarrows(VulcanBot):
         self.log_msg("Open Prayer Tab")
         self.mouse.move_to(self.win.cp_tabs[5].get_center())
         self.mouse.click()
-
-        time.sleep(1)
 
         prayer_id = 18
         if brother == "Ahrim":
