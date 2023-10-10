@@ -77,7 +77,7 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(chest.center())
             self.mouse.click()
 
-            self.__handle_prayer(brother)
+            self.__handle_prayer(self.hidden_brother)
 
             self.__handle_combat(self.hidden_brother)
 
@@ -143,15 +143,20 @@ class VulcanBarrows(VulcanBot):
         hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
         hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat, confidence=0)
 
-        if hidden_tunnel and not self.hidden_brother:  # first run through to find hidden brother
+        if not hidden_tunnel:
+            self.__handle_combat(brother)
+            return
+
+        self.disable_prayers()
+
+        if not self.hidden_brother:  # first run through to find hidden brother
             self.log_msg(f"Found hidden tunnel at {brother}")
             self.hidden_brother = brother
-            self.disable_prayers()
-        elif hidden_tunnel and self.hidden_brother:  # doing the final brother
+        else:  # doing the final brother
             self.mouse.move_to(hidden_tunnel.get_center())
             self.mouse.click()
 
-            time.sleep(2)
+            time.sleep(1)
 
             # fearless option
             fearless_option_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_fearless.png")
@@ -160,8 +165,7 @@ class VulcanBarrows(VulcanBot):
             self.mouse.click()
 
             time.sleep(2)
-        else:  # fight the brother
-            self.__handle_combat(brother)
+            
 
     def drink_prayer_pots(self):
         current_prayer = self.get_prayer()
@@ -209,7 +213,7 @@ class VulcanBarrows(VulcanBot):
                 self.log_msg(f"{brother} already defeated")
                 return
 
-            enemy = self.search_for_tag("barrows brother", clr.RED)
+            enemy = self.search_for_tag("barrows brother", clr.RED, timeout=5)
             if enemy:
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
