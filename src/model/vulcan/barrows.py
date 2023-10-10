@@ -225,6 +225,8 @@ class VulcanBarrows(VulcanBot):
         # wait for fight to be over
         is_player_eating = self.get_animation() in [829]
         while not self.get_is_player_idle() or self.get_is_in_combat() or is_player_eating:
+            is_player_eating = self.get_animation() in [829]
+
             # Heal if low
             self.__eat_food()
 
