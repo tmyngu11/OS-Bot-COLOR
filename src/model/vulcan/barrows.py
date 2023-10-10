@@ -51,6 +51,8 @@ class VulcanBarrows(VulcanBot):
 
         self.reset_state()
 
+        start_time = time.time()
+
         while current_run < self.runs:
             self.__eat_food()
 
@@ -111,6 +113,9 @@ class VulcanBarrows(VulcanBot):
             current_run += 1
             self.log_msg(f"Runs Completed: {current_run}")
             self.__restock()
+
+        end_time = time.time() - start_time
+        self.log_msg(f"{current_run} runs completed in {end_time}s. Avg time per run: {end_time/current_run}s")
 
         self.logout()
 

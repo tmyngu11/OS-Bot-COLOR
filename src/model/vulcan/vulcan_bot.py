@@ -191,6 +191,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
 
         teleporter = self.search_for_tag("teleporter", clr.GREEN)
         if not teleporter:
+            self.use_teleporter(location)
             return
         self.mouse.move_to(teleporter.random_point())
         self.mouse.click()
