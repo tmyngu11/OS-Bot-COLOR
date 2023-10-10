@@ -313,7 +313,7 @@ class VulcanBarrows(VulcanBot):
             self.mouse.click()
 
         # deposit empty vials
-        vial = self.get_first_occurrence(item_ids.EMPTY_VIAL)
+        vial = self.get_first_occurrence(item_ids.VIAL)
         if vial != -1:
             self.mouse.move_to(self.win.inventory_slots[vial].random_point())
             self.mouse.click()
