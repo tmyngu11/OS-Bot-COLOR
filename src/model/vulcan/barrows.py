@@ -312,6 +312,19 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(food.get_center())
             self.mouse.click()
 
+        # deposit empty vials
+        vial = self.get_first_occurrence(item_ids.EMPTY_VIAL)
+        if vial != -1:
+            self.mouse.move_to(self.win.inventory_slots[vial].random_point())
+            self.mouse.click()
+
+        # take prayer potions
+        potions_path = imsearch.BOT_IMAGES.joinpath("items", "Prayer_potion_bank.png")
+        potions = imsearch.search_img_in_rect(image=potions_path, rect=self.win.game_view)
+        if potions:
+            self.mouse.move_to(potions.get_center())
+            self.mouse.click()
+
         self.close_bank()
 
         self.rejuvenate()
