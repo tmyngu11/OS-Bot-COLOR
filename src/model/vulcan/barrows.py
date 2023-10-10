@@ -77,7 +77,7 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(chest.center())
             self.mouse.click()
 
-            time.sleep(3)
+            self.__handle_prayer(brother)
 
             self.__handle_combat(self.hidden_brother)
 
@@ -137,19 +137,17 @@ class VulcanBarrows(VulcanBot):
 
         self.__use_spade()
 
-        self.__search_sarcophagus()
-
-        self.__handle_hidden_tunnel(brother)
+        self.__search_sarcophagus(brother)
 
     def __handle_hidden_tunnel(self, brother):
         hidden_tunnel_path = imsearch.BOT_IMAGES.joinpath("barrows", "barrows_hidden.png")
         hidden_tunnel = imsearch.search_img_in_rect(image=hidden_tunnel_path, rect=self.win.chat, confidence=0)
 
-        if hidden_tunnel and not self.hidden_brother: # first run through to find hidden brother
+        if hidden_tunnel and not self.hidden_brother:  # first run through to find hidden brother
             self.log_msg(f"Found hidden tunnel at {brother}")
             self.hidden_brother = brother
             self.disable_prayers()
-        elif hidden_tunnel and self.hidden_brother: # doing the final brother
+        elif hidden_tunnel and self.hidden_brother:  # doing the final brother
             self.mouse.move_to(hidden_tunnel.get_center())
             self.mouse.click()
 
@@ -162,15 +160,14 @@ class VulcanBarrows(VulcanBot):
             self.mouse.click()
 
             time.sleep(2)
-        else: # fight the brother
+        else:  # fight the brother
             self.__handle_combat(brother)
-
 
     def __handle_prayer(self, brother):
         current_prayer = self.get_prayer()
 
         # Use prayer potion if available
-        prayer_potion = self.get_first_occurrence([item_ids.PRAYER_POTION1,item_ids.PRAYER_POTION2,item_ids.PRAYER_POTION3,item_ids.PRAYER_POTION4])
+        prayer_potion = self.get_first_occurrence([item_ids.PRAYER_POTION1, item_ids.PRAYER_POTION2, item_ids.PRAYER_POTION3, item_ids.PRAYER_POTION4])
         if prayer_potion != [] and current_prayer <= 20:
             self.log_msg("Using Prayer Potion")
             self.mouse.move_to(self.win.inventory_slots[prayer_potion[0]].random_point())
@@ -202,34 +199,32 @@ class VulcanBarrows(VulcanBot):
         self.mouse.move_to(self.win.cp_tabs[3].get_center())
         self.mouse.click()
 
-
     def __handle_combat(self, brother):
         self.log_msg(f"Fighting {brother}")
         # while not fighting, search for brother to fight
         while self.get_is_player_idle() and not self.get_is_in_combat():
             if self.chatbox_action_text("appears to be empty"):
                 self.log_msg(f"{brother} already defeated")
-                break
+                return
 
             enemy = self.search_for_tag("barrows brother", clr.RED)
             if enemy:
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
-
-        
-        self.__handle_prayer(brother)
+            else:
+                self.__search_sarcophagus(brother)
+                return
 
         # wait for fight to be over
         is_player_eating = self.get_animation() in [829]
         while not self.get_is_player_idle() or self.get_is_in_combat() or is_player_eating:
-
 
             # Heal if low
             self.__eat_food()
 
             # handle magic debuff
             if self.chatbox_action_text("Magic level of 50"):
-                restore_potion = self.get_first_occurrence([item_ids.SUPER_RESTORE1,item_ids.SUPER_RESTORE2,item_ids.SUPER_RESTORE3,item_ids.SUPER_RESTORE4])
+                restore_potion = self.get_first_occurrence([item_ids.SUPER_RESTORE1, item_ids.SUPER_RESTORE2, item_ids.SUPER_RESTORE3, item_ids.SUPER_RESTORE4])
                 if restore_potion != [] and self.get_skill_boosted_level("Magic") < 50:
                     self.log_msg("Using Restore Potion")
                     self.mouse.move_to(self.win.inventory_slots[restore_potion[0]].random_point())
@@ -238,10 +233,9 @@ class VulcanBarrows(VulcanBot):
                 self.__restock()
                 self.__handle_brother(brother)
                 return
-            
+
         self.log_msg("Finished fighting")
         self.disable_prayers()
-
 
     def __swap_equip(self, brother):
         self.select_inventory()
@@ -264,11 +258,14 @@ class VulcanBarrows(VulcanBot):
                 self.mouse.move_to(self.win.inventory_slots[item].random_point())
                 self.mouse.click()
 
-    def __search_sarcophagus(self):
+    def __search_sarcophagus(self, brother):
         sarcophagus = self.search_for_tag("sarcophagus", clr.PINK)
         self.mouse.move_to(sarcophagus.center())
         self.mouse.click()
-        time.sleep(3)
+
+        self.__handle_prayer(brother)
+
+        self.__handle_hidden_tunnel(brother)
 
     def __eat_food(self):
         while self.get_hitpoints()[0] < 60:
@@ -300,32 +297,34 @@ class VulcanBarrows(VulcanBot):
 
         self.select_inventory()
 
-        home_bank_area = [3093, 3497, 3094, 3493]
-        self.use_bank(home_bank_area)
+        # only use bank if need more food or refresh prayer pots
+        if self.get_is_inv_full() and self.get_if_item_in_inv(item_ids.VIAL):
+            home_bank_area = [3093, 3497, 3094, 3493]
+            self.use_bank(home_bank_area)
 
-        # finish walking
-        self.wait_for_idle()
+            # finish walking
+            self.wait_for_idle()
 
-        food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
-        food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
-        if food:
-            self.mouse.move_to(food.get_center())
-            self.mouse.click()
+            food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
+            food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
+            if food:
+                self.mouse.move_to(food.get_center())
+                self.mouse.click()
 
-        # deposit empty vials
-        vial = self.get_first_occurrence(item_ids.VIAL)
-        if vial != -1:
-            self.mouse.move_to(self.win.inventory_slots[vial].random_point())
-            self.mouse.click()
+            # deposit empty vials
+            vial = self.get_first_occurrence(item_ids.VIAL)
+            if vial != -1:
+                self.mouse.move_to(self.win.inventory_slots[vial].random_point())
+                self.mouse.click()
 
-        # take prayer potions
-        potions_path = imsearch.BOT_IMAGES.joinpath("items", "Prayer_potion_bank.png")
-        potions = imsearch.search_img_in_rect(image=potions_path, rect=self.win.game_view)
-        if potions:
-            self.mouse.move_to(potions.get_center())
-            self.mouse.click()
+            # take prayer potions
+            potions_path = imsearch.BOT_IMAGES.joinpath("items", "Prayer_potion_bank.png")
+            potions = imsearch.search_img_in_rect(image=potions_path, rect=self.win.game_view)
+            if potions:
+                self.mouse.move_to(potions.get_center())
+                self.mouse.click()
 
-        self.close_bank()
+            self.close_bank()
 
         self.rejuvenate()
 
