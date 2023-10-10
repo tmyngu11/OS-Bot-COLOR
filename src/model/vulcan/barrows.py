@@ -313,24 +313,26 @@ class VulcanBarrows(VulcanBot):
             # finish walking
             self.wait_for_idle()
 
-            food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
-            food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
-            if food and not self.get_is_inv_full():
-                self.mouse.move_to(food.get_center())
-                self.mouse.click()
+            if not self.get_is_inv_full():
+                food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
+                food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
+                if food:
+                    self.mouse.move_to(food.get_center())
+                    self.mouse.click()
 
-            # deposit empty vials
-            vial = self.get_first_occurrence(item_ids.VIAL)
-            if vial != -1:
-                self.mouse.move_to(self.win.inventory_slots[vial].random_point())
-                self.mouse.click()
+            if self.get_if_item_in_inv(item_ids.VIAL):
+                # deposit empty vials
+                vial = self.get_first_occurrence(item_ids.VIAL)
+                if vial != -1:
+                    self.mouse.move_to(self.win.inventory_slots[vial].random_point())
+                    self.mouse.click()
 
-            # take prayer potions
-            potions_path = imsearch.BOT_IMAGES.joinpath("items", "Prayer_potion_bank.png")
-            potions = imsearch.search_img_in_rect(image=potions_path, rect=self.win.game_view)
-            if potions:
-                self.mouse.move_to(potions.get_center())
-                self.mouse.click()
+                # take prayer potions
+                potions_path = imsearch.BOT_IMAGES.joinpath("items", "Prayer_potion_bank.png")
+                potions = imsearch.search_img_in_rect(image=potions_path, rect=self.win.game_view)
+                if potions:
+                    self.mouse.move_to(potions.get_center())
+                    self.mouse.click()
 
             self.close_bank()
 
