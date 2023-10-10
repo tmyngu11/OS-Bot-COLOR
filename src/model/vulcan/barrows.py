@@ -212,6 +212,7 @@ class VulcanBarrows(VulcanBot):
                 self.mouse.move_to(enemy.random_point())
                 self.mouse.click()
             else:
+                self.disable_prayers()
                 self.__search_sarcophagus(brother)
                 return
 
