@@ -163,7 +163,7 @@ class VulcanBarrows(VulcanBot):
         else:  # fight the brother
             self.__handle_combat(brother)
 
-    def __handle_prayer(self, brother):
+    def drink_prayer_pots(self):
         current_prayer = self.get_prayer()
 
         # Use prayer potion if available
@@ -173,7 +173,9 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(self.win.inventory_slots[prayer_potion[0]].random_point())
             self.mouse.click()
             time.sleep(1)
-            current_prayer = self.get_prayer()
+
+    def __handle_prayer(self, brother):
+        current_prayer = self.get_prayer()
 
         # no prayer
         if current_prayer <= 0:
@@ -219,9 +221,11 @@ class VulcanBarrows(VulcanBot):
         # wait for fight to be over
         is_player_eating = self.get_animation() in [829]
         while not self.get_is_player_idle() or self.get_is_in_combat() or is_player_eating:
-
             # Heal if low
             self.__eat_food()
+
+            # Use prayer Pots
+            self.drink_prayer_pots()
 
             # handle magic debuff
             if self.chatbox_action_text("Magic level of 50"):
