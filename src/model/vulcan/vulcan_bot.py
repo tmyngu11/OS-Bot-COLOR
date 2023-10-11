@@ -8,10 +8,12 @@ from model.runelite_bot import RuneLiteWindow
 import utilities.imagesearch as imsearch
 import utilities.ocr as ocr
 from typing import Union
+import utilities.api.item_ids as item_ids
+
 
 class VulcanBot(WalkerBot, metaclass=ABCMeta):
     def __init__(self, bot_title, description) -> None:
-        super().__init__("Vulcan", bot_title, description, RuneLiteWindow("Vulcan Reborn"))
+        super().__init__("Vulcan", bot_title, description, RuneLiteWindow("RuneLite"))
     
     def bank_all(self):
         """
@@ -42,6 +44,35 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.mouse.move_to(deposit_all_btn.random_point())
         self.log_msg("Depositing inventory")
         self.mouse.click()
+
+        self.close_bank()
+
+    def bank_items(self, items):
+        """
+        Private method to deposit inventory into bank
+        """
+
+        self.toggle_run(True)
+
+        self.log_msg("Looking for bank")
+        bank = self.search_for_tag("bank", clr.CYAN)
+        if bank is None:
+            self.log_msg("Bank not found")
+            return
+        self.log_msg("Found bank")
+
+        self.mouse.move_to(bank.random_point())
+        if not self.click_on_action("Bank"):
+            return
+        self.log_msg("Using bank")
+
+        # finish walking
+        self.wait_for_idle()
+
+        for item in self.get_first_occurrence(items):
+            self.mouse.move_to(self.win.inventory_slots[item].random_point())
+            self.mouse.click()
+            time.sleep(1)
 
         self.close_bank()
 
@@ -225,3 +256,30 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.log_msg("Selecting inventory...")
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
         self.mouse.click()
+
+    def select_spellbook(self):
+        self.log_msg("Selecting Spellbook...")
+        self.mouse.move_to(self.win.cp_tabs[6].random_point())
+        self.mouse.click()
+        time.sleep(1)
+
+    def superheat_ores(self, ore_id):
+        self.select_spellbook()
+
+        for ore in self.get_inv_item_indices(ore_id):
+            # check if enough nature runes
+            if self.get_inv_item_stack_amount(item_ids.NATURE_RUNE) == 0:
+                return False
+
+            if ore <= 10:
+                ore = 10
+            elif ore <= 14:
+                ore = 14
+            self.mouse.move_to(self.win.spellbook_normal[25].get_center())
+            self.mouse.click()
+
+            self.mouse.move_to(self.win.inventory_slots[ore].random_point())
+            self.mouse.click()
+            time.sleep(0.5)
+
+        return True

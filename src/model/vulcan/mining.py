@@ -4,6 +4,7 @@ import utilities.color as clr
 import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
 from utilities.walker import Area, Path
+import utilities.api.item_ids as item_ids
 
 
 class VulcanMiner(VulcanBot):
@@ -16,7 +17,7 @@ class VulcanMiner(VulcanBot):
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
-        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Drop"])
+        self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Drop", "Superheat"])
 
     def save_options(self, options: dict):
         """
@@ -57,6 +58,31 @@ class VulcanMiner(VulcanBot):
                     self.bank_all()
                 elif self.action == "Drop":
                     self.drop_all(ids.logs)
+                elif self.action == "Superheat":
+                    self.select_spellbook()
+
+                    for ore in self.get_inv_item_indices(item_ids.COPPER_ORE):
+                        self.mouse.move_to(self.win.spellbook_normal[25].get_center())
+                        self.mouse.click()
+
+                        self.mouse.move_to(self.win.inventory_slots[ore].random_point())
+                        self.mouse.click()
+                        time.sleep(1)
+
+                    if self.get_is_inv_full():
+                        varrock_east_smith = [3246,3407,3250,3403]
+                        self.walk_to_area(east_varrock_bank)
+
+                        # Use anvil
+                        anvil = self.search_for_tag("anvil", clr.CYAN)
+                        self.mouse.move_to(anvil.random_point())
+
+                        east_varrock_bank = [3250,3420,3254,3419]
+                        self.walk_to_area(east_varrock_bank)
+                        self.bank_all()
+
+                        south_east_varrock_mine = [3285,3366,3288,3363]
+                        self.walk_to_area(south_east_varrock_mine)
                 else:
                     self.log_msg("unknown action")
                 continue
