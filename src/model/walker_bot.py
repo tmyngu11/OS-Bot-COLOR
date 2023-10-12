@@ -144,8 +144,11 @@ class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
         """
         current_position = self.get_player_position()
 
-        idx = next(i for i in range(len(path) - 1, -1, -1) if (abs(path[i][0] - current_position[0]) <= 13 and abs(path[i][1] - current_position[1]) <= 13))
+        tile_limit = 13
+
+        idx = next(i for i in range(len(path) - 1, -1, -1) if (abs(path[i][0] - current_position[0]) <= tile_limit and abs(path[i][1] - current_position[1]) <= tile_limit))
         new_pos = path[idx]
+
         return new_pos
 
     def compute_tiles(self, new_x: int, new_y: int) -> List[float]:
@@ -154,7 +157,7 @@ class WalkerBot(RuneLiteBot, MorgHTTPSocket, metaclass=ABCMeta):
         """
 
         DEGREESPERYAW: float = 360 / 2048
-        TILES_PIXELS = 5
+        TILES_PIXELS = 4
 
         # Get live camera data.
         camera_position = self.get_camera_position()

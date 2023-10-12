@@ -220,15 +220,20 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         self.log_msg("Using bank")
 
     def use_teleporter(self, location: str):
-        area = [3085, 3500, 3087, 3503]
-        self.walk_to_area(area)
+        teleporter_button = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("vulcan", "teleporter_button.png"), self.win.minimap_area)
+        if teleporter:
+            self.mouse.move_to(teleporter_button.random_point())
+            self.mouse.click()
+        else:
+            area = [3085, 3500, 3087, 3503]
+            self.walk_to_area(area)
 
-        teleporter = self.search_for_tag("teleporter", clr.GREEN)
-        if not teleporter:
-            self.use_teleporter(location)
-            return
-        self.mouse.move_to(teleporter.random_point())
-        self.mouse.click()
+            teleporter = self.search_for_tag("teleporter", clr.GREEN)
+            if not teleporter:
+                self.use_teleporter(location)
+                return
+            self.mouse.move_to(teleporter.random_point())
+            self.mouse.click()
 
         self.wait_for_idle()
 

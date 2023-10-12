@@ -1,23 +1,29 @@
 import time
+from model.runelite_bot import RuneLiteWindow
 import utilities.api.item_ids as ids
 import utilities.color as clr
 import utilities.random_util as rd
 from model.vulcan.vulcan_bot import VulcanBot
-from utilities.walker import Area, Path
+from utilities.walker import Area, Path, node_settings, walker
 import utilities.api.item_ids as item_ids
 
 
 class VulcanMiner(VulcanBot):
-    def __init__(self):
+    def __init__(self, window_name = "Vulcan Reborn"):
         bot_title = "Miner"
         description = "Auto mines ore"
-        super().__init__(bot_title=bot_title, description=description)
+        super().__init__(bot_title=bot_title, description=description, window_name=window_name)
         # Set option variables below (initial value is only used during headless testing)
         self.running_time = 600
+        self.action = "Bank"
+        self.starting_area = Area.VARROCK_SOUTH_WEST_MINE
+        self.walking_path = Path.VARROCK_EAST_MINE_TO_BANK
+        self.bank_area = Area.VARROCK_WEST_BANK
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
         self.options_builder.add_dropdown_option("action", "What to do when inventory is full", ["Bank", "Drop", "Superheat"])
+        self.options_builder.add_dropdown_option("location", "Where to mine", ["Dwarven Mines", "Varrok South West Mine"])
 
     def save_options(self, options: dict):
         """
@@ -30,6 +36,12 @@ class VulcanMiner(VulcanBot):
                 self.running_time = options[option]
             elif option == "action":
                 self.action = options[option]
+            elif option == "location":
+                self.location = options[option]
+                if self.location == "Varrok South West Mine":
+                    self.starting_area = Area.VARROCK_SOUTH_WEST_MINE
+                    self.walking_path = Path.VARROCK_EAST_MINE_TO_BANK
+                    self.bank_area = Area.VARROCK_WEST_BANK
             else:
                 self.log_msg(f"Unknown option: {option}")
                 print("Developer: ensure that the option keys are correct, and that options are being unpacked correctly.")
@@ -40,12 +52,6 @@ class VulcanMiner(VulcanBot):
         self.options_set = True
 
     def main_loop(self):
-        self.log_msg("Selecting inventory...")
-        self.mouse.move_to(self.win.cp_tabs[3].random_point())
-        self.mouse.click()
-
-        first_loop = True
-
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
@@ -54,8 +60,9 @@ class VulcanMiner(VulcanBot):
             if self.get_is_inv_full():
                 self.log_msg("Inventory is full")
                 if self.action == "Bank":
-                    self.walk(Path.DWARVEN_MINES_ORE_TO_BANK.value, Area.DWARVEN_MINES_BANK.value)
+                    self.walk(self.walking_path.value, self.bank_area.value)
                     self.bank_all()
+                    self.walk(self.walking_path.value.reverse(), self.starting_area.value)
                 elif self.action == "Drop":
                     self.drop_all(ids.logs)
                 elif self.action == "Superheat":
@@ -97,11 +104,6 @@ class VulcanMiner(VulcanBot):
             self.mouse.move_to(ore.random_point())
             if not self.click_on_action("Mine"):
                 continue
-
-            if first_loop:
-                # Chop for a few seconds to get the Mining plugin to show up
-                time.sleep(5)
-                first_loop = False
 
             time.sleep(rd.truncated_normal_sample(1, 10, 2, 2))
 
