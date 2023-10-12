@@ -12,8 +12,8 @@ import utilities.api.item_ids as item_ids
 
 
 class VulcanBot(WalkerBot, metaclass=ABCMeta):
-    def __init__(self, bot_title, description) -> None:
-        super().__init__("Vulcan", bot_title, description, RuneLiteWindow("RuneLite"))
+    def __init__(self, bot_title, description, window_name = "Vulcan Reborn") -> None:
+        super().__init__("Vulcan", bot_title, description, RuneLiteWindow(window_name))
     
     def bank_all(self):
         """
@@ -104,7 +104,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
         tag = self.get_nearest_tag(color)
         while tag is None:
             failed_searches += 1
-            self.move_camera(10)
+            self.move_camera(30)
 
             if failed_searches % 10 == 0:
                 self.log_msg(f"Searching for {tag_name}...")
@@ -113,7 +113,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
                 # If we've been searching for a whole minute...
                 self.log_msg(f"No {tag_name} found.")
                 return None
-            time.sleep(1)
+            time.sleep(2)
             tag = self.get_nearest_tag(color)
             continue
         self.log_msg(f"Found {tag_name}")
@@ -172,12 +172,15 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
 
     def teleport_home(self):
         # open spells        
-        self.log_msg("Open Spells Tab")
-        self.mouse.move_to(self.win.cp_tabs[6].get_center())
-        self.mouse.click()
+        # self.log_msg("Open Spells Tab")
+        # self.mouse.move_to(self.win.cp_tabs[6].get_center())
+        # self.mouse.click()
 
-        self.mouse.move_to(self.win.spellbook_normal[0].get_center())
-        self.mouse.click()
+        # self.mouse.move_to(self.win.spellbook_normal[0].get_center())
+        # self.mouse.click()
+        pyautogui.write("::home")
+        pyautogui.press("enter")
+        time.sleep(2)
 
     def close_bank(self):
         close_button = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("bank", "close.png"), self.win.game_view)
@@ -266,7 +269,11 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
     def superheat_ores(self, ore_id):
         self.select_spellbook()
 
-        for ore in self.get_inv_item_indices(ore_id):
+        ores = self.get_inv_item_indices(ore_id)
+        if not ores:
+            return False
+
+        for ore in ores:
             # check if enough nature runes
             if self.get_inv_item_stack_amount(item_ids.NATURE_RUNE) == 0:
                 return False

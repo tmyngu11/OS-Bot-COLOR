@@ -75,7 +75,7 @@ class VulcanBarrows(VulcanBot):
             self.log_msg(f"Doing hidden brother: {self.hidden_brother}")
             self.__handle_brother(self.hidden_brother)
 
-            # open last chest
+            # open last chest to fight
             chest = self.search_for_tag("chest", clr.PINK)
             self.mouse.move_to(chest.center())
             self.mouse.click()
@@ -91,6 +91,7 @@ class VulcanBarrows(VulcanBot):
             chest = self.search_for_tag("chest", clr.PINK)
             self.mouse.move_to(chest.center())
             self.mouse.click()
+
             self.wait_for_idle()
             self.mouse.click()
 
