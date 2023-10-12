@@ -1,4 +1,4 @@
-import node_settings
+import utilities.walker.node_settings as node_settings
 import time
 
 
@@ -171,8 +171,8 @@ def generate_path(p1, p2):
     print(test)
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    return target_path
+    return test
 
-p1 = node_settings.locArdougneEBank
-p2 = node_settings.locBarbarianVillage
-generate_path(p1, p2)
+# p1 = node_settings.locVarrockWMine
+# p2 = node_settings.locVarrockWBank
+# print(generate_path(p1, p2))
