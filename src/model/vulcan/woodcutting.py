@@ -58,7 +58,7 @@ class VulcanWoodcutter(VulcanBot):
                 if self.action == "Burn":
                     self.__burn_wood()
                 elif self.action == "Bank":
-                    self.bank_all()
+                    self.bank_items(ids.logs)
                 elif self.action == "Fletch":
                     self.__fletch_wood()
                 elif self.action == "Drop":
