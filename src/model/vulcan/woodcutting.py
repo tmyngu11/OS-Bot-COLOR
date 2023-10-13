@@ -97,7 +97,7 @@ class VulcanWoodcutter(VulcanBot):
         self.wait_for_idle()
 
         knife = self.get_first_occurrence(ids.KNIFE)
-        logs = self.get_first_occurrence([ids.LOGS, ids.OAK_LOGS, ids.WILLOW_LOGS, ids.MAPLE_LOGS, ids.YEW_LOGS, ids.MAGIC_LOGS, ids.REDWOOD_LOGS])
+        logs = self.get_first_occurrence(ids.logs)
         logs = [l for l in logs if l != -1]
         if len(logs) == 0:
             self.log_msg("No logs in inventory")
