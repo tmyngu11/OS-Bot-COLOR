@@ -5,6 +5,7 @@ from typing import List
 
 import customtkinter
 from PIL import Image, ImageTk
+import pyautogui
 from pynput import keyboard
 from tktooltip import ToolTip
 
@@ -18,6 +19,7 @@ from view.fonts.fonts import *
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
+pyautogui.FAILSAFE = False
 
 class App(customtkinter.CTk):
     WIDTH = 680

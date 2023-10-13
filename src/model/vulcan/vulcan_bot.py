@@ -221,7 +221,7 @@ class VulcanBot(WalkerBot, metaclass=ABCMeta):
 
     def use_teleporter(self, location: str):
         teleporter_button = imsearch.search_img_in_rect(imsearch.BOT_IMAGES.joinpath("vulcan", "teleporter_button.png"), self.win.minimap_area)
-        if teleporter:
+        if teleporter_button:
             self.mouse.move_to(teleporter_button.random_point())
             self.mouse.click()
         else:
