@@ -81,7 +81,7 @@ class VulcanBarrows(VulcanBot):
             self.mouse.click()
 
             self.__handle_prayer(self.hidden_brother)
-
+            time.sleep(2)
             self.__handle_combat(self.hidden_brother)
 
             self.wait_for_idle()
