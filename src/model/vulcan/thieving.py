@@ -57,7 +57,7 @@ class VulcanThiever(VulcanBot):
                 self.dismiss_npc()
 
             # If inventory is full
-            if self.get_is_inv_full():
+            if self.morg_api.get_is_inv_full():
                 self.log_msg("Inventory is full")
                 if self.action == "Bank":
                     self.bank_all()
@@ -81,7 +81,7 @@ class VulcanThiever(VulcanBot):
             time.sleep(rd.truncated_normal_sample(1, 10, 2, 2))
 
             # Wait until we're done chopping
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
 
             self.update_progress((time.time() - start_time) / end_time)
 

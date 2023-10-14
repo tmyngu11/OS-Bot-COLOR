@@ -53,7 +53,7 @@ class VulcanWoodcutter(VulcanBot):
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
             # If inventory is full
-            if self.get_is_inv_full():
+            if self.morg_api.get_is_inv_full():
                 self.log_msg("Inventory is full")
                 if self.action == "Burn":
                     self.__burn_wood()
@@ -85,7 +85,7 @@ class VulcanWoodcutter(VulcanBot):
             time.sleep(rd.truncated_normal_sample(1, 10, 2, 2))
 
             # Wait until we're done chopping
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
 
             self.update_progress((time.time() - start_time) / end_time)
 
@@ -94,10 +94,10 @@ class VulcanWoodcutter(VulcanBot):
 
     def __fletch_wood(self):
         self.log_msg("Start fletching")
-        self.wait_for_idle()
+        self.walker.wait_for_idle()
 
-        knife = self.get_first_occurrence(ids.KNIFE)
-        logs = self.get_first_occurrence(ids.logs)
+        knife = self.morg_api.get_first_occurrence(ids.KNIFE)
+        logs = self.morg_api.get_first_occurrence(ids.logs)
         logs = [l for l in logs if l != -1]
         if len(logs) == 0:
             self.log_msg("No logs in inventory")
@@ -116,7 +116,7 @@ class VulcanWoodcutter(VulcanBot):
 
         pag.press("space")
         
-        self.wait_for_idle()
+        self.walker.wait_for_idle()
 
         self.log_msg("Finished Fletching")
 
@@ -129,7 +129,7 @@ class VulcanWoodcutter(VulcanBot):
         self.mouse.move_to(burn_spot.random_point())
         self.mouse.click()
         
-        self.wait_for_idle()
+        self.walker.wait_for_idle()
 
         # start burning
         for i, slot in enumerate(self.win.inventory_slots):
@@ -142,7 +142,7 @@ class VulcanWoodcutter(VulcanBot):
             self.mouse.click()
 
             # wait for idle
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
 
             # use on wood
             self.mouse.move_to(slot.random_point())
@@ -153,7 +153,7 @@ class VulcanWoodcutter(VulcanBot):
                 break
 
             # wait for wood to burn
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
 
         self.log_msg("Finished firemaking")
 

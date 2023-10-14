@@ -69,7 +69,7 @@ class VulcanBarrows(VulcanBot):
                 stairs = self.search_for_tag("stairs", clr.YELLOW)
                 self.mouse.move_to(stairs.center())
                 self.mouse.click()
-                self.wait_for_idle()
+                self.walker.wait_for_idle()
 
             #### do hidden brother ####
             self.log_msg(f"Doing hidden brother: {self.hidden_brother}")
@@ -84,7 +84,7 @@ class VulcanBarrows(VulcanBot):
             time.sleep(2)
             self.__handle_combat(self.hidden_brother)
 
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
             time.sleep(5)
 
             # open last chest
@@ -92,7 +92,7 @@ class VulcanBarrows(VulcanBot):
             self.mouse.move_to(chest.center())
             self.mouse.click()
 
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
 
             if self.chatbox_action_text("under attack"):
                 self.log_msg(f"Need to fight {self.hidden_brother}")
@@ -155,8 +155,8 @@ class VulcanBarrows(VulcanBot):
         # walk to brother
         brother_area = locations[brother]
         self.log_msg(f"Moving to {brother}")
-        self.walk_to_area(brother_area)
-        if not self.is_at_destination(brother_area):
+        self.walker.walk_to_area(brother_area)
+        if not self.walker.is_at_destination(brother_area):
             return
 
         self.__swap_equip(brother)
@@ -199,7 +199,7 @@ class VulcanBarrows(VulcanBot):
         current_prayer = self.get_prayer()
 
         # Use prayer potion if available
-        prayer_potion = self.get_first_occurrence([item_ids.PRAYER_POTION1, item_ids.PRAYER_POTION2, item_ids.PRAYER_POTION3, item_ids.PRAYER_POTION4])
+        prayer_potion = self.morg_api.get_first_occurrence([item_ids.PRAYER_POTION1, item_ids.PRAYER_POTION2, item_ids.PRAYER_POTION3, item_ids.PRAYER_POTION4])
         if prayer_potion != [] and current_prayer <= 20:
             self.log_msg("Using Prayer Potion")
             self.mouse.move_to(self.win.inventory_slots[prayer_potion[0]].random_point())
@@ -234,7 +234,7 @@ class VulcanBarrows(VulcanBot):
     def __handle_combat(self, brother):
         self.log_msg(f"Fighting {brother}")
         # while not fighting, search for brother to fight
-        while self.get_is_player_idle() and not self.get_is_in_combat():
+        while self.morg_api.get_is_player_idle() and not self.morg_api.get_is_in_combat():
             if self.chatbox_action_text("appears to be empty"):
                 self.log_msg(f"{brother} already defeated")
                 return
@@ -249,7 +249,7 @@ class VulcanBarrows(VulcanBot):
                 return
 
         # wait for fight to be over
-        while not self.get_is_player_idle(poll_seconds=5) or self.get_is_in_combat() or self.get_animation() in [829]:
+        while not self.morg_api.get_is_player_idle(poll_seconds=5) or self.morg_api.get_is_in_combat() or self.morg_api.get_animation() in [829]:
             # Heal if low
             self.__eat_food()
 
@@ -258,8 +258,8 @@ class VulcanBarrows(VulcanBot):
 
             # handle magic debuff
             if self.chatbox_action_text("Magic level of 50"):
-                restore_potion = self.get_first_occurrence([item_ids.SUPER_RESTORE1, item_ids.SUPER_RESTORE2, item_ids.SUPER_RESTORE3, item_ids.SUPER_RESTORE4])
-                if restore_potion != [] and self.get_skill_boosted_level("Magic") < 50:
+                restore_potion = self.morg_api.get_first_occurrence([item_ids.SUPER_RESTORE1, item_ids.SUPER_RESTORE2, item_ids.SUPER_RESTORE3, item_ids.SUPER_RESTORE4])
+                if restore_potion != [] and self.morg_api.get_skill_boosted_level("Magic") < 50:
                     self.log_msg("Using Restore Potion")
                     self.mouse.move_to(self.win.inventory_slots[restore_potion[0]].random_point())
                     self.mouse.click()
@@ -282,14 +282,14 @@ class VulcanBarrows(VulcanBot):
             required_weapon = item_ids.ADAMANT_KNIFE
             required_chest = item_ids.GUTHIX_DHIDE_BODY
 
-        if not self.get_is_item_equipped(required_weapon):
-            item = self.get_first_occurrence(required_weapon)
+        if not self.morg_api.get_is_item_equipped(required_weapon):
+            item = self.morg_api.get_first_occurrence(required_weapon)
             if item != -1:
                 self.mouse.move_to(self.win.inventory_slots[item].random_point())
                 self.mouse.click()
 
-        if not self.get_is_item_equipped(required_chest):
-            item = self.get_first_occurrence(required_chest)
+        if not self.morg_api.get_is_item_equipped(required_chest):
+            item = self.morg_api.get_first_occurrence(required_chest)
             if item != -1:
                 self.mouse.move_to(self.win.inventory_slots[item].random_point())
                 self.mouse.click()
@@ -304,8 +304,8 @@ class VulcanBarrows(VulcanBot):
         self.__handle_hidden_tunnel(brother)
 
     def __eat_food(self):
-        while self.get_hitpoints()[0] < 60:
-            food_indexes = self.get_inv_item_indices(item_ids.all_food + item_ids.combo_food)
+        while self.morg_api.get_hitpoints()[0] < 60:
+            food_indexes = self.morg_api.get_inv_item_indices(item_ids.all_food + item_ids.combo_food)
             if food_indexes:
                 self.log_msg("Eating...")
                 self.mouse.move_to(self.win.inventory_slots[food_indexes[0]].random_point())
@@ -320,10 +320,10 @@ class VulcanBarrows(VulcanBot):
 
     def __use_spade(self):
         self.log_msg("Using Spade")
-        spade = self.get_first_occurrence(ids.SPADE)
+        spade = self.morg_api.get_first_occurrence(ids.SPADE)
         self.mouse.move_to(self.win.inventory_slots[spade].random_point())
         self.mouse.click()
-        self.wait_for_idle()
+        self.walker.wait_for_idle()
 
     def __restock(self):
 
@@ -334,23 +334,23 @@ class VulcanBarrows(VulcanBot):
         self.select_inventory()
 
         # only use bank if need more food or refresh prayer pots
-        if not self.get_is_inv_full() or self.get_if_item_in_inv(item_ids.VIAL):
+        if not self.morg_api.get_is_inv_full() or self.morg_api.get_if_item_in_inv(item_ids.VIAL):
             home_bank_area = [3093, 3497, 3094, 3493]
             self.use_bank(home_bank_area)
 
             # finish walking
-            self.wait_for_idle()
+            self.walker.wait_for_idle()
 
-            if not self.get_is_inv_full():
+            if not self.morg_api.get_is_inv_full():
                 food_path = imsearch.BOT_IMAGES.joinpath("items", "Anglerfish_bank.png")
                 food = imsearch.search_img_in_rect(image=food_path, rect=self.win.game_view)
                 if food:
                     self.mouse.move_to(food.get_center())
                     self.mouse.click()
 
-            if self.get_if_item_in_inv(item_ids.VIAL):
+            if self.morg_api.get_if_item_in_inv(item_ids.VIAL):
                 # deposit empty vials
-                vial = self.get_first_occurrence(item_ids.VIAL)
+                vial = self.morg_api.get_first_occurrence(item_ids.VIAL)
                 if vial != -1:
                     self.mouse.move_to(self.win.inventory_slots[vial].random_point())
                     self.mouse.click()
