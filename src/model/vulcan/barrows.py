@@ -103,6 +103,9 @@ class VulcanBarrows(VulcanBot):
                 self.mouse.move_to(chest.center())
                 self.mouse.click()
 
+            # open loot chest
+            chest = self.search_for_tag("chest", clr.PINK)
+            self.mouse.move_to(chest.center())
             self.mouse.click()
 
             time.sleep(2)
