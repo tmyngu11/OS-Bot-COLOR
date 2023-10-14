@@ -95,7 +95,7 @@ class VulcanBarrows(VulcanBot):
             self.wait_for_idle()
 
             if self.chatbox_action_text("under attack"):
-                self.log_msg(f"Need to fight {self.brother}")
+                self.log_msg(f"Need to fight {self.hidden_brother}")
                 self.__handle_combat(self.hidden_brother)
 
                 # open last chest
@@ -112,7 +112,7 @@ class VulcanBarrows(VulcanBot):
 
             close_loot_path = imsearch.BOT_IMAGES.joinpath("barrows", "close.png")
             close_loot_option = imsearch.search_img_in_rect(image=close_loot_path, rect=self.win.game_view)
-            while not close_loot_option:
+            if not close_loot_option:
                 chest = self.search_for_tag("chest", clr.PINK)
                 self.mouse.move_to(chest.center())
                 self.mouse.click()
