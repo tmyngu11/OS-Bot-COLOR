@@ -24,17 +24,7 @@ class ExtendedRuneLiteBot(RuneLiteBot, metaclass=ABCMeta):
 
         self.toggle_run(True)
 
-        self.log_msg("Looking for bank")
-        bank = self.search_for_tag("bank", clr.CYAN)
-        if bank is None:
-            self.log_msg("Bank not found")
-            return
-        self.log_msg("Found bank")
-
-        self.mouse.move_to(bank.random_point())
-        if not self.click_on_action("Bank"):
-            return
-        self.log_msg("Using bank")
+        self.use_bank()
 
         # finish walking
         self.walker.wait_for_idle()
@@ -56,17 +46,7 @@ class ExtendedRuneLiteBot(RuneLiteBot, metaclass=ABCMeta):
 
         self.toggle_run(True)
 
-        self.log_msg("Looking for bank")
-        bank = self.search_for_tag("bank", clr.CYAN)
-        if bank is None:
-            self.log_msg("Bank not found")
-            return
-        self.log_msg("Found bank")
-
-        self.mouse.move_to(bank.random_point())
-        if not self.click_on_action("Bank"):
-            return
-        self.log_msg("Using bank")
+        self.use_bank()
 
         # finish walking
         self.walker.wait_for_idle()

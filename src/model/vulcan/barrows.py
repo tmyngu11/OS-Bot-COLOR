@@ -41,7 +41,7 @@ class VulcanBarrows(VulcanBot):
             "Verak": False,
             "Torag": False,
             "Karil": False,
-            "Guthan": False,
+            "Guthan": False
         }
 
         self.hidden_brother = None
@@ -59,6 +59,10 @@ class VulcanBarrows(VulcanBot):
             # loop through brothers and kill them. skip hidden
             for brother, status in self.brothers.items():
                 if status:
+                    continue
+
+                if brother == "Guthan" and self.hidden_brother == None:
+                    self.hidden_brother = brother
                     continue
 
                 self.__handle_brother(brother)
