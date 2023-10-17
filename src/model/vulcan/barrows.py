@@ -16,7 +16,7 @@ class VulcanBarrows(VulcanBot):
         super().__init__(bot_title=title, description=description)
 
         # headless options
-        self.runs = 5
+        self.runs = 50
 
     def create_options(self):
         self.options_builder.add_slider_option("runs", "How many times to run?", 1, 50)
@@ -70,10 +70,11 @@ class VulcanBarrows(VulcanBot):
                 self.brothers[brother] = True
 
                 # now leave
-                stairs = self.search_for_tag("stairs", clr.YELLOW)
-                self.mouse.move_to(stairs.center())
-                self.mouse.click()
-                self.walker.wait_for_idle()
+                while self.morg_api.get_player_region_data()[2] != 14131:
+                    stairs = self.search_for_tag("stairs", clr.YELLOW)
+                    self.mouse.move_to(stairs.center())
+                    self.mouse.click()
+                    self.walker.wait_for_idle()
 
             #### do hidden brother ####
             self.log_msg(f"Doing hidden brother: {self.hidden_brother}")

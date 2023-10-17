@@ -58,6 +58,26 @@ class ExtendedRuneLiteBot(RuneLiteBot, metaclass=ABCMeta):
 
         self.close_bank()
 
+    def bank_all_except(self, items_to_ignore):
+        """
+        Banks player's inventory except for the items_to_ignore
+        """
+        self.toggle_run(True)
+
+        self.use_bank()
+
+        ignored_items_indices = self.morg_api.get_inv_item_indices(items_to_ignore)
+
+        # Start banking
+        for i, slot in enumerate(self.win.inventory_slots):
+            if i in ignored_items_indices:
+                continue
+            self.mouse.move_to(self.win.inventory_slots[i].random_point())
+            self.mouse.click()
+
+        self.close_bank()
+
+
 
     def walk_to_midpoint(self):
         self.log_msg("Walking to midpoint")
