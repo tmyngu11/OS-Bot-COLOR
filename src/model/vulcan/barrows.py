@@ -61,7 +61,7 @@ class VulcanBarrows(VulcanBot):
                 if status:
                     continue
 
-                if brother == "Guthan" and self.hidden_brother == None:
+                if brother == "Guthan" and not self.hidden_brother:
                     self.hidden_brother = brother
                     continue
 
